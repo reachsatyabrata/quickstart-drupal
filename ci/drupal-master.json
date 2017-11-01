@@ -106,13 +106,5 @@
     {
         "ParameterKey": "DrupalSiteDomain",
         "ParameterValue": "localhost"
-    },
-    {
-        "ParameterKey": "QSS3BucketName",
-        "ParameterValue": "$[taskcat_autobucket]"
-    },
-    {
-        "ParameterKey": "QSS3KeyPrefix",
-        "ParameterValue": "quickstart-drupal"
     }
 ]
