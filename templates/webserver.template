@@ -1,11 +1,13 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Drupal Webserver Template. (qs-1nqqf5kol)",
-    "Metadata":{
-        "AWS::CloudFormation::Interface":{
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
                 {
-                    "Label": {"default": "Network Configuration"},
+                    "Label": {
+                        "default": "Network Configuration"
+                    },
                     "Parameters": [
                         "WebServerSubnets",
                         "WebELBSecurityGroup",
@@ -17,7 +19,9 @@
                     ]
                 },
                 {
-                    "Label": {"default": "Database Configuration"},
+                    "Label": {
+                        "default": "Database Configuration"
+                    },
                     "Parameters": [
                         "DBEndpointAddress",
                         "DBMasterUsername",
@@ -28,7 +32,9 @@
                     ]
                 },
                 {
-                    "Label": {"default": "Drupal Configuration"},
+                    "Label": {
+                        "default": "Drupal Configuration"
+                    },
                     "Parameters": [
                         "PhpVersion",
                         "DrupalVersion",
@@ -40,7 +46,9 @@
                     ]
                 },
                 {
-                    "Label": {"default": "Drupal Webserver Configuration"},
+                    "Label": {
+                        "default": "Drupal Webserver Configuration"
+                    },
                     "Parameters": [
                         "WebServerInstanceType",
                         "AutoScalingNotificationEmail",
@@ -60,12 +68,10 @@
                     ]
                 }
             ],
-            "ParameterLabels": {
-
-            }
+            "ParameterLabels": {}
         }
     },
-    "Parameters":{
+    "Parameters": {
         "QSS3BucketName": {
             "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
             "ConstraintDescription": "AWS Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
@@ -146,7 +152,7 @@
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
-        "DBEndpointAddress":{
+        "DBEndpointAddress": {
             "Description": "Aurora DB Endpoint",
             "Type": "String"
         },
@@ -167,7 +173,7 @@
             "MinLength": "8",
             "NoEcho": "True",
             "Type": "String"
-        },  
+        },
         "DrupalDbName": {
             "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
             "Default": "drupaldb",
@@ -194,21 +200,28 @@
             "Type": "String",
             "NoEcho": "true"
         },
-        "PhpVersion":{
-            "AllowedValues": ["php56", "php70", "php71"],
+        "PhpVersion": {
+            "AllowedValues": [
+                "php56",
+                "php70",
+                "php71"
+            ],
             "ConstraintDescription": "Choose a valid PHP version. Values can be php56, php70, php71 ",
             "Default": "php56",
             "Description": "PHP version to be installed. PHP-5.6=php56, PHP-7.0=php70, PHP-7.1=php71",
             "Type": "String"
         },
-        "DrupalVersion":{
+        "DrupalVersion": {
             "Description": "Drupal version to install",
             "Type": "String",
-            "AllowedValues": ["7", "8"],
+            "AllowedValues": [
+                "7",
+                "8"
+            ],
             "ConstraintDescription": "Allowed values 7 or 8",
             "Default": "7"
         },
-        "DrupalSiteName":{
+        "DrupalSiteName": {
             "Description": "Descriptive name for your drupal site",
             "AllowedPattern": "[a-zA-Z][a-zA-Z0-9 ]*",
             "ConstraintDescription": "Min 5 chars. Only alphanumeric",
@@ -224,24 +237,24 @@
             "Type": "String"
         },
         "DrupalSiteAdminUsername": {
-            "Description" : "The Drupal site admin account username",
+            "Description": "The Drupal site admin account username",
             "Type": "String",
             "MinLength": "5",
             "MaxLength": "16",
             "Default": "admin",
-            "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
-            "ConstraintDescription" : "Must begin with a letter, contain only alphanumeric characters and must be between 5 and 16 characters long"
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+            "ConstraintDescription": "Must begin with a letter, contain only alphanumeric characters and must be between 5 and 16 characters long"
         },
         "DrupalSiteAdminPassword": {
-            "Description" : "The Drupal site admin account password",
+            "Description": "The Drupal site admin account password",
             "Type": "String",
             "MinLength": "8",
             "MaxLength": "41",
-            "AllowedPattern" : "[a-zA-Z0-9]*",
-            "ConstraintDescription" : "Must contain only alphanumeric characters and must be between 8 and 41 characters long.",
+            "AllowedPattern": "[a-zA-Z0-9]*",
+            "ConstraintDescription": "Must contain only alphanumeric characters and must be between 8 and 41 characters long.",
             "NoEcho": "true"
         },
-        "DrupalSiteDomain":{
+        "DrupalSiteDomain": {
             "Description": "Domain name of the site. e.g. mywebsite.com. You must have the domain name registered",
             "Default": "localhost",
             "Type": "String"
@@ -278,57 +291,64 @@
             "Type": "AWS::EC2::SecurityGroup::Id"
         }
     },
-    "Mappings":{
+    "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "AMZNLINUXHVM": "amzn-ami-hvm-2017.03.1.20170812-x86_64-gp2"
+                "AMZNLINUXHVM": "amzn-ami-hvm-2017.09.0.20170930-x86_64-gp2"
             },
             "ap-northeast-1": {
-                "AMZNLINUXHVM": "ami-4af5022c"
+                "AMZNLINUXHVM": "ami-2a69be4c"
             },
             "ap-northeast-2": {
-                "AMZNLINUXHVM": "ami-8663bae8"
+                "AMZNLINUXHVM": "ami-9bec36f5"
             },
             "ap-south-1": {
-                "AMZNLINUXHVM": "ami-d7abd1b8"
+                "AMZNLINUXHVM": "ami-4fc58420"
             },
             "ap-southeast-1": {
-                "AMZNLINUXHVM": "ami-fdb8229e"
+                "AMZNLINUXHVM": "ami-0797ea64"
             },
             "ap-southeast-2": {
-                "AMZNLINUXHVM": "ami-30041c53"
+                "AMZNLINUXHVM": "ami-8536d6e7"
             },
             "ca-central-1": {
-                "AMZNLINUXHVM": "ami-5ac17f3e"
+                "AMZNLINUXHVM": "ami-fd55ec99"
             },
             "eu-central-1": {
-                "AMZNLINUXHVM": "ami-657bd20a"
+                "AMZNLINUXHVM": "ami-c7ee5ca8"
             },
             "eu-west-1": {
-                "AMZNLINUXHVM": "ami-ebd02392"
+                "AMZNLINUXHVM": "ami-acd005d5"
             },
             "eu-west-2": {
-                "AMZNLINUXHVM": "ami-489f8e2c"
+                "AMZNLINUXHVM": "ami-1a7f6d7e"
             },
             "sa-east-1": {
-                "AMZNLINUXHVM": "ami-d27203be"
+                "AMZNLINUXHVM": "ami-f1344b9d"
             },
             "us-east-1": {
-                "AMZNLINUXHVM": "ami-4fffc834"
+                "AMZNLINUXHVM": "ami-8c1be5f6"
             },
             "us-east-2": {
-                "AMZNLINUXHVM": "ami-ea87a78f"
+                "AMZNLINUXHVM": "ami-c5062ba0"
             },
             "us-west-1": {
-                "AMZNLINUXHVM": "ami-3a674d5a"
+                "AMZNLINUXHVM": "ami-02eada62"
             },
             "us-west-2": {
-                "AMZNLINUXHVM": "ami-aa5ebdd2"
+                "AMZNLINUXHVM": "ami-e689729e"
             }
         }
     },
     "Conditions": {
-        "DomainIsLocalhost":{"Fn::Equals":[{"Ref": "DrupalSiteDomain"}, "localhost"]},
+        "DomainIsLocalhost": {
+            "Fn::Equals": [
+                {
+                    "Ref": "DrupalSiteDomain"
+                },
+                "localhost"
+            ]
+        },
         "GovCloudCondition": {
             "Fn::Equals": [
                 {
@@ -338,78 +358,146 @@
             ]
         }
     },
-    "Resources":{
-        "DrupalEFS":{
+    "Resources": {
+        "DrupalEFS": {
             "Type": "AWS::EFS::FileSystem",
-            "Properties":{
+            "Properties": {
                 "PerformanceMode": "generalPurpose",
                 "FileSystemTags": [
-                    {"Key": "Name", "Value": "Drupal EFS Shared Filesystem"}
+                    {
+                        "Key": "Name",
+                        "Value": "Drupal EFS Shared Filesystem"
+                    }
                 ]
             }
         },
         "DrupalEFSMountTarget1": {
             "Type": "AWS::EFS::MountTarget",
             "Properties": {
-                "FileSystemId": {"Ref": "DrupalEFS"},
-                "SubnetId": {"Fn::Select": ["0", {"Ref": "WebServerSubnets"}]},
-                "SecurityGroups": [{"Ref": "EFSSecurityGroup"}]
+                "FileSystemId": {
+                    "Ref": "DrupalEFS"
+                },
+                "SubnetId": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Ref": "WebServerSubnets"
+                        }
+                    ]
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "EFSSecurityGroup"
+                    }
+                ]
             }
         },
         "DrupalEFSMountTarget2": {
             "Type": "AWS::EFS::MountTarget",
             "Properties": {
-                "FileSystemId": {"Ref": "DrupalEFS"},
-                "SubnetId": {"Fn::Select": ["1", {"Ref": "WebServerSubnets"}]},
-                "SecurityGroups": [{"Ref": "EFSSecurityGroup"}]
+                "FileSystemId": {
+                    "Ref": "DrupalEFS"
+                },
+                "SubnetId": {
+                    "Fn::Select": [
+                        "1",
+                        {
+                            "Ref": "WebServerSubnets"
+                        }
+                    ]
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "EFSSecurityGroup"
+                    }
+                ]
             }
         },
-        "DrupalAMIEC2Instance":{ 
+        "DrupalAMIEC2Instance": {
             "Type": "AWS::EC2::Instance",
-            "DependsOn":["DrupalEFSMountTarget1", "DrupalEFSMountTarget2"],
+            "DependsOn": [
+                "DrupalEFSMountTarget1",
+                "DrupalEFSMountTarget2"
+            ],
             "Metadata": {
                 "AWS::CloudFormation::Init": {
-                    "configSets":{
+                    "configSets": {
                         "install_drupal": [
-                            "install_cfn", 
-                            "mount_efs", 
-                            "createdb", 
-                            {"Fn::Join":["",["install-packageSet-",{"Ref": "PhpVersion"}]]},
+                            "install_cfn",
+                            "mount_efs",
+                            "createdb",
+                            {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "install-packageSet-",
+                                        {
+                                            "Ref": "PhpVersion"
+                                        }
+                                    ]
+                                ]
+                            },
                             "drupal"
                         ]
                     },
-                    "install_cfn":{
-                        "files":{
-                            "/etc/cfn/cfn-hup.conf":{
-                                "content": {"Fn::Join": ["",[
-                                    "[main]\n",
-                                    "stack=", {"Ref": "AWS::StackId"}, "\n",
-                                    "region=", {"Ref": "AWS::Region"}, "\n",
-                                    "verbose=true"
-                                ]]},
+                    "install_cfn": {
+                        "files": {
+                            "/etc/cfn/cfn-hup.conf": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "[main]\n",
+                                            "stack=",
+                                            {
+                                                "Ref": "AWS::StackId"
+                                            },
+                                            "\n",
+                                            "region=",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "\n",
+                                            "verbose=true"
+                                        ]
+                                    ]
+                                },
                                 "mode": "000400",
                                 "owner": "root",
                                 "group": "root"
                             },
-                            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":{
-                                "content":{ "Fn::Join":["",[
-                                    "[cfn-auto-reloader-hook]\n",
-                                    "triggers=post.update\n",
-                                    "path=Resources.DrupalAMIEC2Instance.Metadata.AWS::CloudFormation::Init\n",
-                                    "action=/opt/aws/bin/cfn-init -v ",
-                                    "--stack ", {"Ref": "AWS::StackName"}, " ",
-                                    "--resource DrupalAMIEC2Instance ",
-                                    "--configsets install_drupal ",
-                                    "--region ", {"Ref": "AWS::Region"}, "\n"
-                                ]]},
+                            "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "[cfn-auto-reloader-hook]\n",
+                                            "triggers=post.update\n",
+                                            "path=Resources.DrupalAMIEC2Instance.Metadata.AWS::CloudFormation::Init\n",
+                                            "action=/opt/aws/bin/cfn-init -v ",
+                                            "--stack ",
+                                            {
+                                                "Ref": "AWS::StackName"
+                                            },
+                                            " ",
+                                            "--resource DrupalAMIEC2Instance ",
+                                            "--configsets install_drupal ",
+                                            "--region ",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "\n"
+                                        ]
+                                    ]
+                                },
                                 "mode": "000400",
                                 "owner": "root",
                                 "group": "root"
                             }
                         },
-                        "services":{
-                            "sysvinit":{
-                                "cfn-hup":{
+                        "services": {
+                            "sysvinit": {
+                                "cfn-hup": {
                                     "enabled": "true",
                                     "ensureRunning": "true",
                                     "files": [
@@ -420,73 +508,129 @@
                             }
                         }
                     },
-                    "mount_efs":{
-                        "packages":{
-                            "yum":{
-                                "nfs-utils":[]
+                    "mount_efs": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
                             }
                         },
-                        "files":{
-                            "/tmp/mount-efs.sh":{
-                                "content":{"Fn::Join":["",[
-                                    "#!/bin/bash\n",
-                                    "LINE=\"", 
-                                    {"Fn::Join":["",[{"Ref": "DrupalEFS"}, ".efs.", {"Ref":"AWS::Region"}, ".amazonaws.com", ":/ "]]}, 
-                                    "/var/www nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0\"\n",
-                                    "grep -q \"$LINE\" /etc/fstab || echo \"$LINE\" >> /etc/fstab\n"
-                                ]]},
+                        "files": {
+                            "/tmp/mount-efs.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            "LINE=\"",
+                                            {
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        {
+                                                            "Ref": "DrupalEFS"
+                                                        },
+                                                        ".efs.",
+                                                        {
+                                                            "Ref": "AWS::Region"
+                                                        },
+                                                        ".amazonaws.com",
+                                                        ":/ "
+                                                    ]
+                                                ]
+                                            },
+                                            "/var/www nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0\"\n",
+                                            "grep -q \"$LINE\" /etc/fstab || echo \"$LINE\" >> /etc/fstab\n"
+                                        ]
+                                    ]
+                                },
                                 "mode": "000500",
                                 "owner": "root",
                                 "group": "root"
                             }
                         },
-                        "commands":{
-                            "01_append_fstab":{
+                        "commands": {
+                            "01_append_fstab": {
                                 "command": "/tmp/mount-efs.sh"
                             },
-                            "02_create_drupal_dir":{
+                            "02_create_drupal_dir": {
                                 "command": "mkdir -p /var/www",
                                 "test": "test ! -e /var/www"
                             },
-                            "03_mount_efs":{
+                            "03_mount_efs": {
                                 "command": "mount -a"
                             }
                         }
                     },
-                    "createdb":{
-                        "packages":{
-                            "yum":{
-                                "mysql56":[]
+                    "createdb": {
+                        "packages": {
+                            "yum": {
+                                "mysql56": []
                             }
                         },
-                        "files":{
-                            "/tmp/setup_drupaldb.sql":{
-                                "content":{"Fn::Join":["",[
-                                    "CREATE DATABASE IF NOT EXISTS ", {"Ref": "DrupalDbName"}, " CHARACTER SET UTF8 COLLATE utf8_general_ci;\n",
-                                    "GRANT ALL ON ", {"Ref": "DrupalDbName"}, ".* TO '", {"Ref": "DrupalDbUsername"}, "'@'%' IDENTIFIED BY '", {"Ref": "DrupalDbPassword"},"';\n"
-                                ]]},
+                        "files": {
+                            "/tmp/setup_drupaldb.sql": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "CREATE DATABASE IF NOT EXISTS ",
+                                            {
+                                                "Ref": "DrupalDbName"
+                                            },
+                                            " CHARACTER SET UTF8 COLLATE utf8_general_ci;\n",
+                                            "GRANT ALL ON ",
+                                            {
+                                                "Ref": "DrupalDbName"
+                                            },
+                                            ".* TO '",
+                                            {
+                                                "Ref": "DrupalDbUsername"
+                                            },
+                                            "'@'%' IDENTIFIED BY '",
+                                            {
+                                                "Ref": "DrupalDbPassword"
+                                            },
+                                            "';\n"
+                                        ]
+                                    ]
+                                },
                                 "mode": "000400",
                                 "owner": "root",
                                 "group": "root"
                             }
                         },
-                        "commands":{
-                            "01_runQuery":{
-                                "command": {"Fn::Join": ["",[
-                                    "mysql -u ", {"Ref": "DBMasterUsername"}, 
-                                    " --password='", { "Ref" : "DBMasterUserPassword" }, "'",
-                                    " -h ", {"Ref": "DBEndpointAddress"},
-                                    " < /tmp/setup_drupaldb.sql || error_exit 'Failed to create database user'\n"
-                                ]]}
+                        "commands": {
+                            "01_runQuery": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mysql -u ",
+                                            {
+                                                "Ref": "DBMasterUsername"
+                                            },
+                                            " --password='",
+                                            {
+                                                "Ref": "DBMasterUserPassword"
+                                            },
+                                            "'",
+                                            " -h ",
+                                            {
+                                                "Ref": "DBEndpointAddress"
+                                            },
+                                            " < /tmp/setup_drupaldb.sql || error_exit 'Failed to create database user'\n"
+                                        ]
+                                    ]
+                                }
                             },
                             "02_cleanup": {
                                 "command": "sudo rm -f /tmp/setup_drupaldb.sql"
                             }
                         }
                     },
-                    "install-packageSet-php56":{
-                        "packages":{
-                            "yum":{
+                    "install-packageSet-php56": {
+                        "packages": {
+                            "yum": {
                                 "git": [],
                                 "httpd24": [],
                                 "php56": [],
@@ -504,9 +648,9 @@
                             }
                         }
                     },
-                    "install-packageSet-php70":{
-                        "packages":{
-                            "yum":{
+                    "install-packageSet-php70": {
+                        "packages": {
+                            "yum": {
                                 "git": [],
                                 "httpd24": [],
                                 "php70": [],
@@ -525,9 +669,9 @@
                             }
                         }
                     },
-                    "install-packageSet-php71":{
-                        "packages":{
-                            "yum":{
+                    "install-packageSet-php71": {
+                        "packages": {
+                            "yum": {
                                 "git": [],
                                 "httpd24": [],
                                 "php71": [],
@@ -545,92 +689,169 @@
                             }
                         }
                     },
-                    "drupal":{
-                        "files":{
-                            "/etc/httpd/conf.d/drupal.conf":{
-                                "content":{"Fn::Join":["",[
-                                    "<VirtualHost *:80>\n",
-                                    "    ServerAdmin ",{"Ref": "DrupalSiteAdminEmail"},"\n",
-                                    "    ServerName  ", {"Ref": "DrupalSiteDomain"}, "\n",
-                                    "    ServerAlias ", {"Fn::If":["DomainIsLocalhost", "localhost", {"Fn::Join":["",["www.",{"Ref":"DrupalSiteDomain"}]]}]}, "\n",    
-                                    "    DocumentRoot /var/www/drupal\n",
-                                    "    <Directory /var/www/drupal>\n",
-                                    "        Options -Indexes -MultiViews +FollowSymLinks\n",
-                                    "        AllowOverride All\n",
-                                    "        Order allow,deny\n",
-                                    "        allow from all\n",
-                                    "    </Directory>\n",
-                                    "    LogLevel warn\n",
-                                    "    ErrorLog /var/log/httpd/drupal-error.log\n",
-                                    "    CustomLog /var/log/httpd/drupal-access.log combined\n",
-                                    "</VirtualHost>\n",
-                                    "ServerSignature Off\n",
-                                    "ServerTokens Prod\n"
-                                ]]},
-                                "mode":"000644",
+                    "drupal": {
+                        "files": {
+                            "/etc/httpd/conf.d/drupal.conf": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "<VirtualHost *:80>\n",
+                                            "    ServerAdmin ",
+                                            {
+                                                "Ref": "DrupalSiteAdminEmail"
+                                            },
+                                            "\n",
+                                            "    ServerName  ",
+                                            {
+                                                "Ref": "DrupalSiteDomain"
+                                            },
+                                            "\n",
+                                            "    ServerAlias ",
+                                            {
+                                                "Fn::If": [
+                                                    "DomainIsLocalhost",
+                                                    "localhost",
+                                                    {
+                                                        "Fn::Join": [
+                                                            "",
+                                                            [
+                                                                "www.",
+                                                                {
+                                                                    "Ref": "DrupalSiteDomain"
+                                                                }
+                                                            ]
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "\n",
+                                            "    DocumentRoot /var/www/drupal\n",
+                                            "    <Directory /var/www/drupal>\n",
+                                            "        Options -Indexes -MultiViews +FollowSymLinks\n",
+                                            "        AllowOverride All\n",
+                                            "        Order allow,deny\n",
+                                            "        allow from all\n",
+                                            "    </Directory>\n",
+                                            "    LogLevel warn\n",
+                                            "    ErrorLog /var/log/httpd/drupal-error.log\n",
+                                            "    CustomLog /var/log/httpd/drupal-access.log combined\n",
+                                            "</VirtualHost>\n",
+                                            "ServerSignature Off\n",
+                                            "ServerTokens Prod\n"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000644",
                                 "owner": "root",
                                 "group": "root"
                             }
                         },
-                        "commands":{
-                            "01_install_composer":{
+                        "commands": {
+                            "01_install_composer": {
                                 "command": "curl -sS https://getcomposer.org/installer | php",
                                 "cwd": "/root",
-                                "env": {"HOME": "/root"}
+                                "env": {
+                                    "HOME": "/root"
+                                }
                             },
-                            "02_install_drush":{
+                            "02_install_drush": {
                                 "command": "/root/composer.phar global require drush/drush:8.*",
                                 "test": "test -e /root/composer.phar",
-                                "env": {"HOME": "/root"}
+                                "env": {
+                                    "HOME": "/root"
+                                }
                             },
-                            "03_clean_httpd_confd_dir":{
+                            "03_clean_httpd_confd_dir": {
                                 "command": "rm -f autoindex.conf notrace.conf userdir.conf welcome.conf",
                                 "cwd": "/etc/httpd/conf.d/"
                             },
-                            "04_00_download_drupal":{
-                                "command": {"Fn::Join":["",[
-                                    "/root/.composer/vendor/bin/drush dl -y drupal-", 
-                                    {"Ref": "DrupalVersion"}," --drupal-project-rename drupal"
-                                ]]},
+                            "04_00_download_drupal": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "/root/.composer/vendor/bin/drush dl -y drupal-",
+                                            {
+                                                "Ref": "DrupalVersion"
+                                            },
+                                            " --drupal-project-rename drupal"
+                                        ]
+                                    ]
+                                },
                                 "cwd": "/root",
                                 "env": {
                                     "HOME": "/root",
                                     "DRUSH_PHP": "/usr/bin/php"
                                 }
                             },
-                            "04_01_move_drupal":{
+                            "04_01_move_drupal": {
                                 "cwd": "/root",
                                 "command": "mv /root/drupal /var/www/drupal"
                             },
-                            "05_disable_php_allow_url_fopen":{
+                            "05_disable_php_allow_url_fopen": {
                                 "command": "sed -i 's/allow_url_fopen = On/allow_url_fopen = Off/g' /etc/php.ini",
                                 "test": "test -e /etc/php.ini"
                             },
-                            "06_disable_expose_php":{
+                            "06_disable_expose_php": {
                                 "command": "sed -i 's/expose_php = On/expose_php = Off/g' /etc/php.ini",
                                 "test": "test -e /etc/php.ini"
                             },
-                            "07_install_drupal":{
-                                "command": {"Fn::Join":["",[
-                                    "/root/.composer/vendor/bin/drush site-install standard --yes",
-                                    " --site-name='", { "Ref" : "DrupalSiteName" }, "' --site-mail=", { "Ref" : "DrupalSiteAdminEmail" },
-                                    " --account-name=", { "Ref" : "DrupalSiteAdminUsername" }, " --account-pass=", { "Ref" : "DrupalSiteAdminPassword" },
-                                    " --db-url=mysql://", { "Ref" : "DrupalDbUsername" }, ":", { "Ref" : "DrupalDbPassword" }, "@", { "Ref" : "DBEndpointAddress" }, "/", { "Ref" : "DrupalDbName" },
-                                    " --db-prefix=drupal_\n"
-                                ]]},
+                            "07_install_drupal": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "/root/.composer/vendor/bin/drush site-install standard --yes",
+                                            " --site-name='",
+                                            {
+                                                "Ref": "DrupalSiteName"
+                                            },
+                                            "' --site-mail=",
+                                            {
+                                                "Ref": "DrupalSiteAdminEmail"
+                                            },
+                                            " --account-name=",
+                                            {
+                                                "Ref": "DrupalSiteAdminUsername"
+                                            },
+                                            " --account-pass=",
+                                            {
+                                                "Ref": "DrupalSiteAdminPassword"
+                                            },
+                                            " --db-url=mysql://",
+                                            {
+                                                "Ref": "DrupalDbUsername"
+                                            },
+                                            ":",
+                                            {
+                                                "Ref": "DrupalDbPassword"
+                                            },
+                                            "@",
+                                            {
+                                                "Ref": "DBEndpointAddress"
+                                            },
+                                            "/",
+                                            {
+                                                "Ref": "DrupalDbName"
+                                            },
+                                            " --db-prefix=drupal_\n"
+                                        ]
+                                    ]
+                                },
                                 "cwd": "/var/www/drupal",
                                 "env": {
                                     "HOME": "/root",
                                     "DRUSH_PHP": "/usr/bin/php"
                                 }
                             },
-                            "08_drupal_files_folder_permission":{
+                            "08_drupal_files_folder_permission": {
                                 "command": "chown -R apache:apache /var/www/drupal/sites/default/files",
                                 "test": "test -e /var/www/drupal/sites/default/files"
                             }
                         },
-                        "services":{
-                            "sysvinit":{
+                        "services": {
+                            "sysvinit": {
                                 "httpd": {
                                     "enabled": "true",
                                     "ensureRunning": "true",
@@ -640,52 +861,109 @@
                                         "/var/www/drupal/sites/default/settings.php"
                                     ]
                                 }
-                            } 
+                            }
                         }
                     }
                 }
             },
             "Properties": {
-                "ImageId" : {"Fn::FindInMap": ["AWSAMIRegionMap", {"Ref": "AWS::Region"}, "AMZNLINUXHVM" ]},
-                "InstanceType": {"Ref": "WebServerInstanceType"},
-                "SubnetId":{"Fn::Select": ["0", {"Ref": "WebServerSubnets"}]},
-                "SecurityGroupIds": [{"Ref": "WebServerSecurityGroup"}],
-                "KeyName": {"Ref": "KeyPair"},
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "AMZNLINUXHVM"
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "WebServerInstanceType"
+                },
+                "SubnetId": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Ref": "WebServerSubnets"
+                        }
+                    ]
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "WebServerSecurityGroup"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyPair"
+                },
                 "UserData": {
                     "Fn::Base64": {
-                        "Fn::Join": ["", [
-                            "#!/bin/bash\n",
-                            "yum update -y aws-cfn-bootstrap\n",
-
-                            "yum update -y", "\n",
-
-                            "/opt/aws/bin/cfn-init -v ",
-                            "--stack ", {"Ref": "AWS::StackName"}, " ",
-                            "--resource DrupalAMIEC2Instance ",
-                            "--configsets install_drupal ",
-                            "--region ", {"Ref": "AWS::Region"}, "\n",
-                            
-                            "/opt/aws/bin/cfn-signal -e $? --stack ", {"Ref": "AWS::StackName"},
-                            " --resource DrupalAMIEC2Instance --region ", {"Ref": "AWS::Region"}, "\n"
-                        ]]}
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash\n",
+                                "yum update -y aws-cfn-bootstrap\n",
+                                "yum update -y",
+                                "\n",
+                                "/opt/aws/bin/cfn-init -v ",
+                                "--stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " ",
+                                "--resource DrupalAMIEC2Instance ",
+                                "--configsets install_drupal ",
+                                "--region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "/opt/aws/bin/cfn-signal -e $? --stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " --resource DrupalAMIEC2Instance --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
+                            ]
+                        ]
+                    }
                 },
                 "Tags": [
-                    {"Key":"Name", "Value": {"Fn::Join":["", [{"Ref": "AWS::StackName"},"-AMI Instance"]]}}
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "-AMI Instance"
+                                ]
+                            ]
+                        }
+                    }
                 ]
             },
             "CreationPolicy": {
-				"ResourceSignal" : {
-					"Count" : "1",
-					"Timeout" : "PT20M"
-				}
-			}
+                "ResourceSignal": {
+                    "Count": "1",
+                    "Timeout": "PT20M"
+                }
+            }
         },
-        "CreateDrupalAMI":{
+        "CreateDrupalAMI": {
             "Type": "AWS::CloudFormation::Stack",
-            "Properties":{
-                "TemplateURL": {"Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/createAMI.template"},
-                "Parameters":{
-                    "EC2InstanceId": {"Ref": "DrupalAMIEC2Instance"},
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/createAMI.template"
+                },
+                "Parameters": {
+                    "EC2InstanceId": {
+                        "Ref": "DrupalAMIEC2Instance"
+                    },
                     "AMIBaseName": "Drupal",
                     "ARNPartition": {
                         "Fn::If": [
@@ -700,14 +978,30 @@
         "WebServerAsg": {
             "Type": "AWS::AutoScaling::AutoScalingGroup",
             "Properties": {
-                "LaunchConfigurationName": {"Ref": "WebServerLC"},
-                "MinSize": {"Ref": "WebServerMinSize"},
-                "MaxSize": {"Ref": "WebServerMaxSize"},
-                "DesiredCapacity": {"Ref": "WebServerDesiredCapacity"},
-                "TargetGroupARNs" : [ { "Ref" : "ALBTargetGroup" } ],
-                "VPCZoneIdentifier": {"Ref": "WebServerSubnets"},
+                "LaunchConfigurationName": {
+                    "Ref": "WebServerLC"
+                },
+                "MinSize": {
+                    "Ref": "WebServerMinSize"
+                },
+                "MaxSize": {
+                    "Ref": "WebServerMaxSize"
+                },
+                "DesiredCapacity": {
+                    "Ref": "WebServerDesiredCapacity"
+                },
+                "TargetGroupARNs": [
+                    {
+                        "Ref": "ALBTargetGroup"
+                    }
+                ],
+                "VPCZoneIdentifier": {
+                    "Ref": "WebServerSubnets"
+                },
                 "NotificationConfiguration": {
-                    "TopicARN": {"Ref": "NotificationTopic"},
+                    "TopicARN": {
+                        "Ref": "NotificationTopic"
+                    },
                     "NotificationTypes": [
                         "autoscaling:EC2_INSTANCE_LAUNCH",
                         "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
@@ -718,7 +1012,17 @@
                 "Tags": [
                     {
                         "Key": "Name",
-                        "Value": {"Fn::Join": ["-",[{"Ref": "AWS::StackName"},"Web Server"]]},
+                        "Value": {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    },
+                                    "Web Server"
+                                ]
+                            ]
+                        },
                         "PropagateAtLaunch": "true"
                     }
                 ]
@@ -728,26 +1032,56 @@
             "Type": "AWS::AutoScaling::LaunchConfiguration",
             "DependsOn": "CreateDrupalAMI",
             "Properties": {
-                "ImageId": {"Fn::GetAtt": ["CreateDrupalAMI", "Outputs.AMIId"]},
-                "InstanceType": {"Ref": "WebServerInstanceType"},
-                "SecurityGroups": [{"Ref": "WebServerSecurityGroup"}],
-                "KeyName": {"Ref": "KeyPair"}
+                "ImageId": {
+                    "Fn::GetAtt": [
+                        "CreateDrupalAMI",
+                        "Outputs.AMIId"
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "WebServerInstanceType"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "WebServerSecurityGroup"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyPair"
+                }
             }
         },
         "NotificationTopic": {
             "Type": "AWS::SNS::Topic",
             "Properties": {
                 "Subscription": [
-                    {"Endpoint": {"Ref": "AutoScalingNotificationEmail"}, "Protocol": "email"}
+                    {
+                        "Endpoint": {
+                            "Ref": "AutoScalingNotificationEmail"
+                        },
+                        "Protocol": "email"
+                    }
                 ],
-                "TopicName" : {"Fn::Join": ["", [{"Ref":"AWS::StackName"},"-DrupalSnsTopic"]]}
+                "TopicName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "-DrupalSnsTopic"
+                        ]
+                    ]
+                }
             }
         },
         "WebServerScaleUpPolicy": {
             "Type": "AWS::AutoScaling::ScalingPolicy",
             "Properties": {
                 "AdjustmentType": "ChangeInCapacity",
-                "AutoScalingGroupName": {"Ref": "WebServerAsg"},
+                "AutoScalingGroupName": {
+                    "Ref": "WebServerAsg"
+                },
                 "Cooldown": "60",
                 "ScalingAdjustment": "1"
             }
@@ -756,7 +1090,9 @@
             "Type": "AWS::AutoScaling::ScalingPolicy",
             "Properties": {
                 "AdjustmentType": "ChangeInCapacity",
-                "AutoScalingGroupName": {"Ref": "WebServerAsg"},
+                "AutoScalingGroupName": {
+                    "Ref": "WebServerAsg"
+                },
                 "Cooldown": "60",
                 "ScalingAdjustment": "-1"
             }
@@ -771,9 +1107,18 @@
                 "Period": "300",
                 "EvaluationPeriods": "2",
                 "Threshold": "90",
-                "AlarmActions": [{"Ref": "WebServerScaleUpPolicy"}],
+                "AlarmActions": [
+                    {
+                        "Ref": "WebServerScaleUpPolicy"
+                    }
+                ],
                 "Dimensions": [
-                    {"Name": "AutoScalingGroupName", "Value": {"Ref": "WebServerAsg"}}
+                    {
+                        "Name": "AutoScalingGroupName",
+                        "Value": {
+                            "Ref": "WebServerAsg"
+                        }
+                    }
                 ],
                 "ComparisonOperator": "GreaterThanThreshold"
             }
@@ -788,9 +1133,18 @@
                 "Period": "300",
                 "EvaluationPeriods": "2",
                 "Threshold": "70",
-                "AlarmActions": [{"Ref": "WebServerScaleDownPolicy"}],
+                "AlarmActions": [
+                    {
+                        "Ref": "WebServerScaleDownPolicy"
+                    }
+                ],
                 "Dimensions": [
-                    {"Name": "AutoScalingGroupName", "Value": {"Ref": "WebServerAsg"}}
+                    {
+                        "Name": "AutoScalingGroupName",
+                        "Value": {
+                            "Ref": "WebServerAsg"
+                        }
+                    }
                 ],
                 "ComparisonOperator": "LessThanThreshold"
             }
@@ -812,7 +1166,10 @@
                     }
                 ],
                 "Tags": [
-                    {"Key": "Name", "Value": "DrupalWebserverAlb"}
+                    {
+                        "Key": "Name",
+                        "Value": "DrupalWebserverAlb"
+                    }
                 ]
             }
         },
@@ -863,13 +1220,23 @@
             }
         }
     },
-    "Outputs":{
+    "Outputs": {
         "ELBURL": {
             "Description": "The URL of the ELB that you should use to create a CNAME/ALIAS DNS recrod to point to your Domain e.g. mysite.com",
-            "Value":{"Fn::Join":["",[
-                "http://",
-                {"Fn::GetAtt":["ApplicationLoadBalancer","DNSName"]}
-                ]]}
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "http://",
+                        {
+                            "Fn::GetAtt": [
+                                "ApplicationLoadBalancer",
+                                "DNSName"
+                            ]
+                        }
+                    ]
+                ]
+            }
         }
     }
 }
