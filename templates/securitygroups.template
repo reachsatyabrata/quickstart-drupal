@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Drupal Security Groups template",
+    "Description": "Drupal Security Groups template. (qs-1nqqf5kog)",
     "Parameters": {
         "VPC": {
             "AllowedPattern": "vpc-[0-9a-z]{8}",

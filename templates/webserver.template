@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Drupal Webserver Template",
+    "Description": "Drupal Webserver Template. (qs-1nqqf5kol)",
     "Metadata":{
         "AWS::CloudFormation::Interface":{
             "ParameterGroups": [

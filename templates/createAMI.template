@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Create an AMI for Launch Configuration",
+    "Description": "Create an AMI for Launch Configuration. (qs-1nqqf5ko6)",
     "Parameters":{
         "EC2InstanceId":{
             "Description": "EC2 Instance-Id from which the AMI will be created.",

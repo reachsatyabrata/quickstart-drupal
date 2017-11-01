@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Deploys Drupal on AWS.",
+    "Description": "Deploys Drupal on AWS. (qs-1nqqf5knr)",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [

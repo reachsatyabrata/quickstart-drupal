@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Drupal RDS Aurora-MySQL Template",
+    "Description": "Drupal RDS Aurora-MySQL Template. (qs-1nqqf5kob)",
     "Parameters": {
         "Subnets": {
             "ConstraintDescription": "must be list of existing subnet Ids",

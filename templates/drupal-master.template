@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Deploy Drupal on AWS (New VPC)",
+    "Description": "Deploy Drupal on AWS (New VPC). (qs-1nqqf5ko1)",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
