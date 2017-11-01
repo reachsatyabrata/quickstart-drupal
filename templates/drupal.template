@@ -488,7 +488,9 @@
                     "WebServerMinSize": {"Ref": "WebServerMinSize"},
                     "WebServerMaxSize": {"Ref": "WebServerMaxSize"},
                     "WebServerDesiredCapacity": {"Ref":  "WebServerDesiredCapacity"},
-                    "WebElasticLoadBalancerSubnets": {"Fn::Join":[",",[{"Ref":"PublicSubnet1ID"}, {"Ref":"PublicSubnet2ID"}]]},
+                    "PublicSubnet1ID": {"Ref":"PublicSubnet1ID"},
+                    "PublicSubnet2ID": {"Ref":"PublicSubnet2ID"},
+                    "VPCID": {"Ref":"VPCID"},
                     "WebELBSecurityGroup": {"Fn::GetAtt":["SecurityGroupsStack", "Outputs.ELBSecurityGroup"]}
                 }
             }

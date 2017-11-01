@@ -7,10 +7,12 @@
                 {
                     "Label": {"default": "Network Configuration"},
                     "Parameters": [
-                        "WebElasticLoadBalancerSubnets",
                         "WebServerSubnets",
                         "WebELBSecurityGroup",
                         "WebServerSecurityGroup",
+                        "PublicSubnet1ID",
+                        "PublicSubnet2ID",
+                        "VPCID",
                         "EFSSecurityGroup"
                     ]
                 },
@@ -259,11 +261,17 @@
             "Description": "Desired number of web server instances in Auto Scaling group",
             "Type": "Number"
         },
-        "WebElasticLoadBalancerSubnets": {
-            "ConstraintDescription": "Must be list of existing Public subnet Ids",
-            "Default": "",
-            "Description": "A list of public subnet identifiers of Amazon VPCs where the ElasticLoadBalancer would be launched.",
-            "Type": "List<AWS::EC2::Subnet::Id>"
+        "VPCID": {
+            "Description": "Select the VPC to deploy Drupal",
+            "Type": "AWS::EC2::VPC::Id"
+        },
+        "PublicSubnet1ID": {
+            "Description": "Public Subnet ID 1 located in Availability Zone 1",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "PublicSubnet2ID": {
+            "Description": "Public Subnet ID 2 located in Availability Zone 2",
+            "Type": "AWS::EC2::Subnet::Id"
         },
         "WebELBSecurityGroup": {
             "Description": "ELB Security Group",
@@ -696,7 +704,7 @@
                 "MinSize": {"Ref": "WebServerMinSize"},
                 "MaxSize": {"Ref": "WebServerMaxSize"},
                 "DesiredCapacity": {"Ref": "WebServerDesiredCapacity"},
-                "LoadBalancerNames": [{"Ref": "WebElasticLoadBalancer"}],
+                "TargetGroupARNs" : [ { "Ref" : "ALBTargetGroup" } ],
                 "VPCZoneIdentifier": {"Ref": "WebServerSubnets"},
                 "NotificationConfiguration": {
                     "TopicARN": {"Ref": "NotificationTopic"},
@@ -787,33 +795,70 @@
                 "ComparisonOperator": "LessThanThreshold"
             }
         },
-        "WebElasticLoadBalancer": {
-            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+        "ApplicationLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
             "Properties": {
-                "Subnets": {"Ref": "WebElasticLoadBalancerSubnets"},
-                "SecurityGroups": [{"Ref": "WebELBSecurityGroup"}],
-                "CrossZone": "true",
-                "Listeners": [
+                "Subnets": [
                     {
-                        "LoadBalancerPort": "80",
-                        "InstancePort": "80",
-                        "Protocol": "HTTP",
-                        "InstanceProtocol": "HTTP"
+                        "Ref": "PublicSubnet1ID"
+                    },
+                    {
+                        "Ref": "PublicSubnet2ID"
                     }
                 ],
-                "HealthCheck": {
-                    "Target":  "HTTP:80/",
-                    "HealthyThreshold": "3",
-                    "UnhealthyThreshold": "5",
-                    "Interval": "30",
-                    "Timeout": "5"
-                },
-                "ConnectionDrainingPolicy": {
-                    "Enabled": "true",
-                    "Timeout": "60"
-                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "WebELBSecurityGroup"
+                    }
+                ],
                 "Tags": [
-                    {"Key": "Name", "Value": "DrupalWebserverElb"}
+                    {"Key": "Name", "Value": "DrupalWebserverAlb"}
+                ]
+            }
+        },
+        "ALBListener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "ALBTargetGroup"
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "ApplicationLoadBalancer"
+                },
+                "Port": "80",
+                "Protocol": "HTTP"
+            }
+        },
+        "ALBTargetGroup": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "HealthCheckIntervalSeconds": 30,
+                "HealthCheckTimeoutSeconds": 5,
+                "HealthyThresholdCount": 2,
+                "Port": 80,
+                "Protocol": "HTTP",
+                "UnhealthyThresholdCount": 5,
+                "VpcId": {
+                    "Ref": "VPCID"
+                },
+                "TargetGroupAttributes": [
+                    {
+                        "Key": "stickiness.enabled",
+                        "Value": "true"
+                    },
+                    {
+                        "Key": "stickiness.type",
+                        "Value": "lb_cookie"
+                    },
+                    {
+                        "Key": "stickiness.lb_cookie.duration_seconds",
+                        "Value": "30"
+                    }
                 ]
             }
         }
@@ -823,7 +868,7 @@
             "Description": "The URL of the ELB that you should use to create a CNAME/ALIAS DNS recrod to point to your Domain e.g. mysite.com",
             "Value":{"Fn::Join":["",[
                 "http://",
-                {"Fn::GetAtt":["WebElasticLoadBalancer","DNSName"]}
+                {"Fn::GetAtt":["ApplicationLoadBalancer","DNSName"]}
                 ]]}
         }
     }
