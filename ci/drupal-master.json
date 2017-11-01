@@ -16,7 +16,7 @@
         "ParameterValue": "t2.micro"
     },
     {
-        "ParameterKey": "KeyPairName",
+        "ParameterKey": "KeyPair",
         "ParameterValue": "$[alfred_getkeypair]"
     },
     {
