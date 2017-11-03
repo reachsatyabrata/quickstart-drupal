@@ -54,7 +54,7 @@
             "Default": "db.m4.2xlarge",
             "Description": "The name of the compute and memory capacity class of the DB instance.",
             "Type": "String"
-        },        
+        },
         "DBName": {
             "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
             "Default": "QuickstartAuroraDB",
@@ -81,16 +81,26 @@
             "MinLength": "8",
             "NoEcho": "True",
             "Type": "String"
-        },        
+        },
         "DBMultiAZ": {
-            "AllowedValues": ["true", "false"],
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
             "Default": "true",
             "Description": "Specifies if the database instance is a multiple Availability Zone deployment.",
             "Type": "String"
-        }        
+        }
     },
     "Conditions": {
-        "CreateReadReplica": {"Fn::Equals": [{"Ref": "DBMultiAZ"}, "true"]}
+        "CreateReadReplica": {
+            "Fn::Equals": [
+                {
+                    "Ref": "DBMultiAZ"
+                },
+                "true"
+            ]
+        }
     },
     "Resources": {
         "AuroraDBSubnetGroup": {
@@ -102,19 +112,34 @@
                 }
             }
         },
-        "AuroraDBCluster":{
+        "AuroraDBCluster": {
             "Type": "AWS::RDS::DBCluster",
-            "Properties":{
-                "BackupRetentionPeriod": { "Ref": "DBBackupRetentionPeriod" },
-                "DBSubnetGroupName": { "Ref": "AuroraDBSubnetGroup" },
+            "Properties": {
+                "BackupRetentionPeriod": {
+                    "Ref": "DBBackupRetentionPeriod"
+                },
+                "DBSubnetGroupName": {
+                    "Ref": "AuroraDBSubnetGroup"
+                },
                 "Engine": "aurora",
                 "EngineVersion": "5.6",
-                "MasterUsername": { "Ref": "DBMasterUsername" },
-                "MasterUserPassword": { "Ref": "DBMasterUserPassword" },
-                "VpcSecurityGroupIds": [{"Ref": "AuroraRDSSecurityGroup"}], 
+                "MasterUsername": {
+                    "Ref": "DBMasterUsername"
+                },
+                "MasterUserPassword": {
+                    "Ref": "DBMasterUserPassword"
+                },
+                "VpcSecurityGroupIds": [
+                    {
+                        "Ref": "AuroraRDSSecurityGroup"
+                    }
+                ],
                 "Tags": [
-                    { "Key": "Name", "Value": "Drupal-Aurora-DB-Cluster"}
-                ]               
+                    {
+                        "Key": "Name",
+                        "Value": "Drupal-Aurora-DB-Cluster"
+                    }
+                ]
             }
         },
         "AuroraDBPrimaryInstance": {
@@ -122,12 +147,23 @@
             "Properties": {
                 "Engine": "aurora",
                 "EngineVersion": "5.6",
-                "DBClusterIdentifier": {"Ref": "AuroraDBCluster"},
-                "DBInstanceClass": { "Ref": "DBInstanceClass" },
-                "DBSubnetGroupName": { "Ref": "AuroraDBSubnetGroup" },
-                "AutoMinorVersionUpgrade": { "Ref": "DBAutoMinorVersionUpgrade" },
+                "DBClusterIdentifier": {
+                    "Ref": "AuroraDBCluster"
+                },
+                "DBInstanceClass": {
+                    "Ref": "DBInstanceClass"
+                },
+                "DBSubnetGroupName": {
+                    "Ref": "AuroraDBSubnetGroup"
+                },
+                "AutoMinorVersionUpgrade": {
+                    "Ref": "DBAutoMinorVersionUpgrade"
+                },
                 "Tags": [
-                    { "Key": "Name", "Value": "Drupal-Aurora-PrimaryDB"}
+                    {
+                        "Key": "Name",
+                        "Value": "Drupal-Aurora-PrimaryDB"
+                    }
                 ]
             }
         },
@@ -137,12 +173,23 @@
             "Properties": {
                 "Engine": "aurora",
                 "EngineVersion": "5.6",
-                "DBClusterIdentifier": {"Ref": "AuroraDBCluster"},
-                "DBInstanceClass": { "Ref": "DBInstanceClass" },
-                "DBSubnetGroupName": { "Ref": "AuroraDBSubnetGroup" },
-                "AutoMinorVersionUpgrade": { "Ref": "DBAutoMinorVersionUpgrade" },
+                "DBClusterIdentifier": {
+                    "Ref": "AuroraDBCluster"
+                },
+                "DBInstanceClass": {
+                    "Ref": "DBInstanceClass"
+                },
+                "DBSubnetGroupName": {
+                    "Ref": "AuroraDBSubnetGroup"
+                },
+                "AutoMinorVersionUpgrade": {
+                    "Ref": "DBAutoMinorVersionUpgrade"
+                },
                 "Tags": [
-                    { "Key": "Name", "Value": "Drupal-Aurora-SecondaryDB"}
+                    {
+                        "Key": "Name",
+                        "Value": "Drupal-Aurora-SecondaryDB"
+                    }
                 ]
             }
         }
@@ -151,29 +198,66 @@
         "AuroraEndPoints": {
             "Description": "Aurora Cluster Endpoint to connect",
             "Value": {
-                "Fn::Join": ["", [
-                    {"Fn::GetAtt": ["AuroraDBCluster","Endpoint.Address"]},
-                    ":",
-                    {"Fn::GetAtt": ["AuroraDBCluster","Endpoint.Port"]},
-                    "/",
-                    {"Ref": "DBName"}]
+                "Fn::Join": [
+                    "",
+                    [
+                        {
+                            "Fn::GetAtt": [
+                                "AuroraDBCluster",
+                                "Endpoint.Address"
+                            ]
+                        },
+                        ":",
+                        {
+                            "Fn::GetAtt": [
+                                "AuroraDBCluster",
+                                "Endpoint.Port"
+                            ]
+                        },
+                        "/",
+                        {
+                            "Ref": "DBName"
+                        }
+                    ]
                 ]
             }
         },
         "DBName": {
             "Description": "Aurora DBName",
-            "Value": {"Ref": "DBName"}
+            "Value": {
+                "Ref": "DBName"
+            }
         },
         "AuroraEndPointAddress": {
             "Description": "Aurora Endpoint to connect",
             "Value": {
-                "Fn::Join": ["",[{"Fn::GetAtt": ["AuroraDBCluster", "Endpoint.Address"]}]]
+                "Fn::Join": [
+                    "",
+                    [
+                        {
+                            "Fn::GetAtt": [
+                                "AuroraDBCluster",
+                                "Endpoint.Address"
+                            ]
+                        }
+                    ]
+                ]
             }
         },
         "AuroraEndPointPort": {
             "Description": "Aurora Endpoint to connect",
             "Value": {
-                "Fn::Join": ["", [{"Fn::GetAtt": ["AuroraDBCluster","Endpoint.Port"]}]]
+                "Fn::Join": [
+                    "",
+                    [
+                        {
+                            "Fn::GetAtt": [
+                                "AuroraDBCluster",
+                                "Endpoint.Port"
+                            ]
+                        }
+                    ]
+                ]
             }
         }
     }

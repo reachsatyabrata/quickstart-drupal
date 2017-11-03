@@ -53,7 +53,7 @@
                         "DrupalSiteName",
                         "DrupalSiteAdminEmail",
                         "DrupalSiteAdminUsername",
-                        "DrupalSiteAdminPassword",   
+                        "DrupalSiteAdminPassword",
                         "DrupalDbName",
                         "DrupalDbUsername",
                         "DrupalDbPassword",
@@ -69,7 +69,7 @@
                         "QSS3KeyPrefix"
                     ]
                 }
-            ],            
+            ],
             "ParameterLabels": {
                 "VPCID": {
                     "default": "VPC ID"
@@ -160,7 +160,7 @@
                 },
                 "QSS3KeyPrefix": {
                     "default": "Quick Start S3 Key Prefix"
-                }             
+                }
             }
         }
     },
@@ -225,7 +225,7 @@
             "Default": "db.t2.small",
             "Description": "Select Instance size for the Database",
             "Type": "String"
-        },        
+        },
         "DBMasterUsername": {
             "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
             "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
@@ -243,9 +243,12 @@
             "MinLength": "8",
             "NoEcho": "True",
             "Type": "String"
-        },        
+        },
         "DBMultiAZ": {
-            "AllowedValues": ["true", "false"],
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
             "Default": "true",
             "Description": "Specifies if the database instance is a multiple Availability Zone deployment.",
             "Type": "String"
@@ -336,21 +339,28 @@
             "Type": "String",
             "NoEcho": "true"
         },
-        "PhpVersion":{
-            "AllowedValues": ["php56", "php70", "php71"],
+        "PhpVersion": {
+            "AllowedValues": [
+                "php56",
+                "php70",
+                "php71"
+            ],
             "ConstraintDescription": "Choose a valid PHP version. Values can be php56, php70, php71 ",
             "Default": "php56",
             "Description": "PHP version to be installed. PHP-5.6=php56, PHP-7.0=php70, PHP-7.1=php71",
             "Type": "String"
         },
-        "DrupalVersion":{
+        "DrupalVersion": {
             "Description": "Drupal version to install",
             "Type": "String",
-            "AllowedValues": ["7", "8"],
+            "AllowedValues": [
+                "7",
+                "8"
+            ],
             "ConstraintDescription": "Allowed values 7 or 8",
             "Default": "7"
         },
-        "DrupalSiteName":{
+        "DrupalSiteName": {
             "Description": "Descriptive name for your drupal site",
             "AllowedPattern": "[a-zA-Z][a-zA-Z0-9 ]*",
             "ConstraintDescription": "Min 5 chars. Only alphanumeric",
@@ -366,24 +376,24 @@
             "Type": "String"
         },
         "DrupalSiteAdminUsername": {
-            "Description" : "The Drupal site admin account username",
+            "Description": "The Drupal site admin account username",
             "Type": "String",
             "MinLength": "5",
             "MaxLength": "16",
             "Default": "admin",
-            "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
-            "ConstraintDescription" : "Must begin with a letter, contain only alphanumeric characters and must be between 5 and 16 characters long"
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+            "ConstraintDescription": "Must begin with a letter, contain only alphanumeric characters and must be between 5 and 16 characters long"
         },
         "DrupalSiteAdminPassword": {
-            "Description" : "The Drupal site admin account password",
+            "Description": "The Drupal site admin account password",
             "Type": "String",
             "MinLength": "8",
             "MaxLength": "41",
-            "AllowedPattern" : "[a-zA-Z0-9]*",
-            "ConstraintDescription" : "Must contain only alphanumeric characters and must be between 8 and 41 characters long.",
+            "AllowedPattern": "[a-zA-Z0-9]*",
+            "ConstraintDescription": "Must contain only alphanumeric characters and must be between 8 and 41 characters long.",
             "NoEcho": "true"
         },
-        "DrupalSiteDomain":{
+        "DrupalSiteDomain": {
             "Description": "Domain name of the site. e.g. mywebsite.com. You must have the domain name registered",
             "Default": "localhost",
             "Type": "String"
@@ -429,69 +439,182 @@
         }
     },
     "Resources": {
-        "SecurityGroupsStack":{
+        "SecurityGroupsStack": {
             "Type": "AWS::CloudFormation::Stack",
-            "Properties":{
-                "TemplateURL":{"Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/securitygroups.template"},
-                "Parameters":{
-                    "VPC": {"Ref": "VPCID"},
-                    "VPCCIDR": {"Ref": "VPCCIDR"}
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/securitygroups.template"
+                },
+                "Parameters": {
+                    "VPC": {
+                        "Ref": "VPCID"
+                    },
+                    "VPCCIDR": {
+                        "Ref": "VPCCIDR"
+                    }
                 }
             }
         },
-        "RDSAuroraStack":{
+        "RDSAuroraStack": {
             "Type": "AWS::CloudFormation::Stack",
-            "Properties":{
-                "TemplateURL":{"Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/rdsaurora.template"},
-                "Parameters":{
-                    "Subnets":{
-                        "Fn::Join":[",",[{"Ref":"PrivateSubnet1ID"}, {"Ref":"PrivateSubnet2ID"}]]
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/rdsaurora.template"
+                },
+                "Parameters": {
+                    "Subnets": {
+                        "Fn::Join": [
+                            ",",
+                            [
+                                {
+                                    "Ref": "PrivateSubnet1ID"
+                                },
+                                {
+                                    "Ref": "PrivateSubnet2ID"
+                                }
+                            ]
+                        ]
                     },
-                    "AuroraRDSSecurityGroup":{
-                        "Fn::GetAtt":["SecurityGroupsStack", "Outputs.AuroraRDSSecurityGroup"]
+                    "AuroraRDSSecurityGroup": {
+                        "Fn::GetAtt": [
+                            "SecurityGroupsStack",
+                            "Outputs.AuroraRDSSecurityGroup"
+                        ]
                     },
-                    "DBAutoMinorVersionUpgrade": {"Ref": "DBAutoMinorVersionUpgrade"},
-                    "DBBackupRetentionPeriod": {"Ref": "DBBackupRetentionPeriod"},
-                    "DBInstanceClass": {"Ref": "DBInstanceClass"},                    
-                    "DBMasterUsername": {"Ref": "DBMasterUsername"},
-                    "DBMasterUserPassword": {"Ref": "DBMasterUserPassword"},
-                    "DBMultiAZ": {"Ref": "DBMultiAZ"}                    
+                    "DBAutoMinorVersionUpgrade": {
+                        "Ref": "DBAutoMinorVersionUpgrade"
+                    },
+                    "DBBackupRetentionPeriod": {
+                        "Ref": "DBBackupRetentionPeriod"
+                    },
+                    "DBInstanceClass": {
+                        "Ref": "DBInstanceClass"
+                    },
+                    "DBMasterUsername": {
+                        "Ref": "DBMasterUsername"
+                    },
+                    "DBMasterUserPassword": {
+                        "Ref": "DBMasterUserPassword"
+                    },
+                    "DBMultiAZ": {
+                        "Ref": "DBMultiAZ"
+                    }
                 }
             }
         },
-        "WebserverStack":{
+        "WebserverStack": {
             "Type": "AWS::CloudFormation::Stack",
-            "Properties":{
-                "TemplateURL":{"Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/webserver.template"},
-                "Parameters":{
-                    "QSS3BucketName": {"Ref": "QSS3BucketName"},
-                    "QSS3KeyPrefix": {"Ref": "QSS3KeyPrefix"},
-                    "AutoScalingNotificationEmail": {"Ref": "AutoScalingNotificationEmail"},
-                    "WebServerSubnets": {"Fn::Join":[",",[{"Ref":"PrivateSubnet1ID"}, {"Ref":"PrivateSubnet2ID"}]]},
-                    "EFSSecurityGroup": {"Fn::GetAtt":["SecurityGroupsStack", "Outputs.EFSSecurityGroup"]},
-                    "WebServerInstanceType": {"Ref": "WebServerInstanceType"},
-                    "WebServerSecurityGroup": {"Fn::GetAtt":["SecurityGroupsStack", "Outputs.WebServerSecurityGroup"]},
-                    "KeyPair": {"Ref": "KeyPair"},
-                    "DBEndpointAddress": {"Fn::GetAtt":["RDSAuroraStack", "Outputs.AuroraEndPointAddress"]},
-                    "DBMasterUsername": {"Ref": "DBMasterUsername"},
-                    "DBMasterUserPassword": {"Ref": "DBMasterUserPassword"},
-                    "DrupalDbName": {"Ref": "DrupalDbName"},
-                    "DrupalDbUsername": {"Ref": "DrupalDbUsername"},
-                    "DrupalDbPassword": {"Ref": "DrupalDbPassword"},
-                    "PhpVersion": {"Ref": "PhpVersion"},
-                    "DrupalVersion": {"Ref": "DrupalVersion"},
-                    "DrupalSiteName": {"Ref":"DrupalSiteName"},
-                    "DrupalSiteAdminEmail": {"Ref": "DrupalSiteAdminEmail"},
-                    "DrupalSiteAdminUsername": {"Ref": "DrupalSiteAdminUsername"},
-                    "DrupalSiteAdminPassword": {"Ref": "DrupalSiteAdminPassword"},
-                    "DrupalSiteDomain": {"Ref": "DrupalSiteDomain"},
-                    "WebServerMinSize": {"Ref": "WebServerMinSize"},
-                    "WebServerMaxSize": {"Ref": "WebServerMaxSize"},
-                    "WebServerDesiredCapacity": {"Ref":  "WebServerDesiredCapacity"},
-                    "PublicSubnet1ID": {"Ref":"PublicSubnet1ID"},
-                    "PublicSubnet2ID": {"Ref":"PublicSubnet2ID"},
-                    "VPCID": {"Ref":"VPCID"},
-                    "WebELBSecurityGroup": {"Fn::GetAtt":["SecurityGroupsStack", "Outputs.ELBSecurityGroup"]}
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/webserver.template"
+                },
+                "Parameters": {
+                    "QSS3BucketName": {
+                        "Ref": "QSS3BucketName"
+                    },
+                    "QSS3KeyPrefix": {
+                        "Ref": "QSS3KeyPrefix"
+                    },
+                    "AutoScalingNotificationEmail": {
+                        "Ref": "AutoScalingNotificationEmail"
+                    },
+                    "WebServerSubnets": {
+                        "Fn::Join": [
+                            ",",
+                            [
+                                {
+                                    "Ref": "PrivateSubnet1ID"
+                                },
+                                {
+                                    "Ref": "PrivateSubnet2ID"
+                                }
+                            ]
+                        ]
+                    },
+                    "EFSSecurityGroup": {
+                        "Fn::GetAtt": [
+                            "SecurityGroupsStack",
+                            "Outputs.EFSSecurityGroup"
+                        ]
+                    },
+                    "WebServerInstanceType": {
+                        "Ref": "WebServerInstanceType"
+                    },
+                    "WebServerSecurityGroup": {
+                        "Fn::GetAtt": [
+                            "SecurityGroupsStack",
+                            "Outputs.WebServerSecurityGroup"
+                        ]
+                    },
+                    "KeyPair": {
+                        "Ref": "KeyPair"
+                    },
+                    "DBEndpointAddress": {
+                        "Fn::GetAtt": [
+                            "RDSAuroraStack",
+                            "Outputs.AuroraEndPointAddress"
+                        ]
+                    },
+                    "DBMasterUsername": {
+                        "Ref": "DBMasterUsername"
+                    },
+                    "DBMasterUserPassword": {
+                        "Ref": "DBMasterUserPassword"
+                    },
+                    "DrupalDbName": {
+                        "Ref": "DrupalDbName"
+                    },
+                    "DrupalDbUsername": {
+                        "Ref": "DrupalDbUsername"
+                    },
+                    "DrupalDbPassword": {
+                        "Ref": "DrupalDbPassword"
+                    },
+                    "PhpVersion": {
+                        "Ref": "PhpVersion"
+                    },
+                    "DrupalVersion": {
+                        "Ref": "DrupalVersion"
+                    },
+                    "DrupalSiteName": {
+                        "Ref": "DrupalSiteName"
+                    },
+                    "DrupalSiteAdminEmail": {
+                        "Ref": "DrupalSiteAdminEmail"
+                    },
+                    "DrupalSiteAdminUsername": {
+                        "Ref": "DrupalSiteAdminUsername"
+                    },
+                    "DrupalSiteAdminPassword": {
+                        "Ref": "DrupalSiteAdminPassword"
+                    },
+                    "DrupalSiteDomain": {
+                        "Ref": "DrupalSiteDomain"
+                    },
+                    "WebServerMinSize": {
+                        "Ref": "WebServerMinSize"
+                    },
+                    "WebServerMaxSize": {
+                        "Ref": "WebServerMaxSize"
+                    },
+                    "WebServerDesiredCapacity": {
+                        "Ref": "WebServerDesiredCapacity"
+                    },
+                    "PublicSubnet1ID": {
+                        "Ref": "PublicSubnet1ID"
+                    },
+                    "PublicSubnet2ID": {
+                        "Ref": "PublicSubnet2ID"
+                    },
+                    "VPCID": {
+                        "Ref": "VPCID"
+                    },
+                    "WebELBSecurityGroup": {
+                        "Fn::GetAtt": [
+                            "SecurityGroupsStack",
+                            "Outputs.ELBSecurityGroup"
+                        ]
+                    }
                 }
             }
         }
@@ -499,7 +622,12 @@
     "Outputs": {
         "ELBURL": {
             "Description": "The URL of the ELB that you should use to create a CNAME/ALIAS DNS recrod to point to your Domain e.g. mysite.com",
-            "Value":{"Fn::GetAtt":["WebserverStack", "Outputs.ELBURL"]}
+            "Value": {
+                "Fn::GetAtt": [
+                    "WebserverStack",
+                    "Outputs.ELBURL"
+                ]
+            }
         }
     }
 }

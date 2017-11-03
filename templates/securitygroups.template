@@ -20,7 +20,9 @@
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
                 "GroupDescription": "Allow access to Aurora Port (AWS Quick Start)",
-                "VpcId": { "Ref": "VPC" },
+                "VpcId": {
+                    "Ref": "VPC"
+                },
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
