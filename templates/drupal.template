@@ -40,7 +40,8 @@
                         "WebServerMinSize",
                         "WebServerMaxSize",
                         "WebServerDesiredCapacity",
-                        "AutoScalingNotificationEmail"
+                        "AutoScalingNotificationEmail",
+                        "SSLCertificateId"
                     ]
                 },
                 {
@@ -160,6 +161,9 @@
                 },
                 "QSS3KeyPrefix": {
                     "default": "Quick Start S3 Key Prefix"
+                },
+                "SSLCertificateId":{
+                    "default": "SSL certificate ARN"
                 }
             }
         }
@@ -412,6 +416,11 @@
             "Default": "1",
             "Description": "Desired number of web server instances in Auto Scaling group",
             "Type": "Number"
+        },
+        "SSLCertificateId": {
+            "Default": "",
+            "Description": "(Optional) The ARN of the SSL certificate to use for the webserver",
+            "Type": "String"
         }
     },
     "Rules": {
@@ -614,6 +623,9 @@
                             "SecurityGroupsStack",
                             "Outputs.ELBSecurityGroup"
                         ]
+                    },
+                    "SSLCertificateId": {
+                        "Ref": "SSLCertificateId"
                     }
                 }
             }

@@ -289,7 +289,12 @@
         "WebELBSecurityGroup": {
             "Description": "ELB Security Group",
             "Type": "AWS::EC2::SecurityGroup::Id"
-        }
+        },
+        "SSLCertificateId": {
+            "Default": "",
+            "Description": "The ARN of the SSL certificate to use for the load balancer. [optional]",
+            "Type": "String"
+        },
     },
     "Mappings": {
         "AWSAMIRegionMap": {
@@ -356,7 +361,19 @@
                 },
                 "us-gov-west-1"
             ]
-        }
+        },
+        "UseSSL": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "SSLCertificateId"
+                        },
+                        ""
+                    ]
+                }
+            ]
+        },
     },
     "Resources": {
         "DrupalEFS": {
@@ -1173,30 +1190,14 @@
                 ]
             }
         },
-        "ALBListener": {
-            "Type": "AWS::ElasticLoadBalancingV2::Listener",
-            "Properties": {
-                "DefaultActions": [
-                    {
-                        "Type": "forward",
-                        "TargetGroupArn": {
-                            "Ref": "ALBTargetGroup"
-                        }
-                    }
-                ],
-                "LoadBalancerArn": {
-                    "Ref": "ApplicationLoadBalancer"
-                },
-                "Port": "80",
-                "Protocol": "HTTP"
-            }
-        },
         "ALBTargetGroup": {
             "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
             "Properties": {
                 "HealthCheckIntervalSeconds": 30,
                 "HealthCheckTimeoutSeconds": 5,
                 "HealthyThresholdCount": 2,
+                "HealthCheckPort": 80,
+                "HealthCheckProtocol": "HTTP",
                 "Port": 80,
                 "Protocol": "HTTP",
                 "UnhealthyThresholdCount": 5,
@@ -1218,7 +1219,62 @@
                     }
                 ]
             }
-        }
+        },
+
+        "ALBListener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "ALBTargetGroup"
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "ApplicationLoadBalancer"
+                },
+                "Port": {
+                    "Fn::If": [
+                        "UseSSL",
+                        443,
+                        80
+                    ]
+                },
+                "Protocol": {
+                    "Fn::If": [
+                        "UseSSL",
+                        "HTTPS",
+                        "HTTP"
+                    ]
+                },
+                "Certificates": [
+                    {
+                        "CertificateArn": {
+                            "Ref": "SSLCertificateId"
+                        }
+                    }
+                ]
+            }
+        },
+        "ALBListenerCertificate": {
+            "Condition": "UseSSL",
+            "Type": "AWS::ElasticLoadBalancingV2::ListenerCertificate",
+            "Properties": {
+                "Certificates": [
+                    {
+                        "CertificateArn": {
+                            "Ref": "SSLCertificateId"
+                        }
+                    }
+                ],
+                "ListenerArn": {
+                    "Ref": "ALBListener"
+                }
+            }
+        }  
+
     },
     "Outputs": {
         "ELBURL": {
@@ -1227,7 +1283,13 @@
                 "Fn::Join": [
                     "",
                     [
-                        "http://",
+                        {
+                            "Fn::If": [
+                                "UseSSL",
+                                "https://",
+                                "http://"
+                            ]
+                        },
                         {
                             "Fn::GetAtt": [
                                 "ApplicationLoadBalancer",
