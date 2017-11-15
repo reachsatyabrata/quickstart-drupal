@@ -294,7 +294,7 @@
             "Default": "",
             "Description": "The ARN of the SSL certificate to use for the load balancer. [optional]",
             "Type": "String"
-        },
+        }
     },
     "Mappings": {
         "AWSAMIRegionMap": {
@@ -1248,14 +1248,8 @@
                         "HTTPS",
                         "HTTP"
                     ]
-                },
-                "Certificates": [
-                    {
-                        "CertificateArn": {
-                            "Ref": "SSLCertificateId"
-                        }
-                    }
-                ]
+                }
+                
             }
         },
         "ALBListenerCertificate": {
