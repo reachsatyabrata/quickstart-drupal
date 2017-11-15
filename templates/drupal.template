@@ -350,7 +350,7 @@
                 "php71"
             ],
             "ConstraintDescription": "Choose a valid PHP version. Values can be php56, php70, php71 ",
-            "Default": "php56",
+            "Default": "php71",
             "Description": "PHP version to be installed. PHP-5.6=php56, PHP-7.0=php70, PHP-7.1=php71",
             "Type": "String"
         },
