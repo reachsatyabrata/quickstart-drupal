@@ -248,8 +248,8 @@
             "Type": "String"
         },
         "DrupalDbPassword": {
-            "AllowedPattern": "(?=\\S)[^@/\"\\r\\n\\t\\f\\s]*",
-            "ConstraintDescription": "Min 8 alphanumeric. Cannot contain white space, @, /, \"",
+            "AllowedPattern": "[a-zA-Z0-9]*",
+            "ConstraintDescription": "Must contain only alphanumeric characters and must be between 8 and 41 characters long.",
             "Description": "The drupal database user account password",
             "MaxLength": "41",
             "MinLength": "8",
