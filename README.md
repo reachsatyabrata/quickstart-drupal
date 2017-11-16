@@ -8,4 +8,4 @@ It's also a great choice for creating integrated digital frameworks. You can ext
 
 The Drupal project is open source software. Anyone can download, use, work on, and share it with others. It's built on [principles](https://www.drupal.org/about/mission-and-principles) like collaboration, globalism, and innovation. It's distributed under the terms of the [GNU General Public License](http://www.gnu.org/copyleft/gpl.html) (GPL). There are [no licensing fees](https://www.drupal.org/about/licensing), ever. Drupal will always be free.
 
-![ScreenShot](images/drupal_arch.png)
+![ScreenShot](https://s3.amazonaws.com/cfautomated/quickstart-drupal/images/drupal_arch.png)
