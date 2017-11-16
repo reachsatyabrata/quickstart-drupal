@@ -1093,7 +1093,7 @@
                 }
             }
         },
-        "WebServerScaleUpPolicy": {
+        "WebServerTargetTrackingScalingPolicy": {
             "Type": "AWS::AutoScaling::ScalingPolicy",
             "Properties": {
                 "AutoScalingGroupName": {
@@ -1107,58 +1107,6 @@
                     },
                     "TargetValue": 75.0
                 }
-            }
-        },
-        "CPUAlarmHigh": {
-            "Type": "AWS::CloudWatch::Alarm",
-            "Properties": {
-                "AlarmDescription": "Scale-up if CPU > 90% for 10 minutes",
-                "MetricName": "CPUUtilization",
-                "Namespace": "AWS/EC2",
-                "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "90",
-                "AlarmActions": [
-                    {
-                        "Ref": "WebServerScaleUpPolicy"
-                    }
-                ],
-                "Dimensions": [
-                    {
-                        "Name": "AutoScalingGroupName",
-                        "Value": {
-                            "Ref": "WebServerAsg"
-                        }
-                    }
-                ],
-                "ComparisonOperator": "GreaterThanThreshold"
-            }
-        },
-        "CPUAlarmLow": {
-            "Type": "AWS::CloudWatch::Alarm",
-            "Properties": {
-                "AlarmDescription": "Scale-down if CPU < 70% for 10 minutes",
-                "MetricName": "CPUUtilization",
-                "Namespace": "AWS/EC2",
-                "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
-                "Threshold": "70",
-                "AlarmActions": [
-                    {
-                        "Ref": "WebServerScaleDownPolicy"
-                    }
-                ],
-                "Dimensions": [
-                    {
-                        "Name": "AutoScalingGroupName",
-                        "Value": {
-                            "Ref": "WebServerAsg"
-                        }
-                    }
-                ],
-                "ComparisonOperator": "LessThanThreshold"
             }
         },
         "ApplicationLoadBalancer": {
