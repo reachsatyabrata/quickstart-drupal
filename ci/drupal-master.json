@@ -45,7 +45,7 @@
     },
     {
         "ParameterKey": "DrupalDbPassword",
-        "ParameterValue": "$[alfred_genpass_8S]"
+        "ParameterValue": "$[alfred_genpass_8A]"
     },
     {
         "ParameterKey": "DrupalDbUsername",
@@ -57,7 +57,7 @@
     },
     {
         "ParameterKey": "DrupalSiteAdminPassword",
-        "ParameterValue": "$[alfred_genpass_8S]"
+        "ParameterValue": "$[alfred_genpass_8A]"
     },
     {
         "ParameterKey": "DrupalSiteAdminUsername",
