@@ -265,12 +265,12 @@
             "Type": "Number"
         },
         "WebServerMaxSize": {
-            "Default": "1",
+            "Default": "12",
             "Description": "Maximum number of web server instances in Auto Scaling group",
             "Type": "Number"
         },
         "WebServerDesiredCapacity": {
-            "Default": "1",
+            "Default": "2",
             "Description": "Desired number of web server instances in Auto Scaling group",
             "Type": "Number"
         },
@@ -380,6 +380,7 @@
             "Type": "AWS::EFS::FileSystem",
             "Properties": {
                 "PerformanceMode": "generalPurpose",
+                "Encrypted": true,
                 "FileSystemTags": [
                     {
                         "Key": "Name",
@@ -975,7 +976,7 @@
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
                 "TemplateURL": {
-                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/createAMI.template"
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/create-ami.template"
                 },
                 "Parameters": {
                     "EC2InstanceId": {
@@ -1095,23 +1096,17 @@
         "WebServerScaleUpPolicy": {
             "Type": "AWS::AutoScaling::ScalingPolicy",
             "Properties": {
-                "AdjustmentType": "ChangeInCapacity",
                 "AutoScalingGroupName": {
                     "Ref": "WebServerAsg"
                 },
                 "Cooldown": "60",
-                "ScalingAdjustment": "1"
-            }
-        },
-        "WebServerScaleDownPolicy": {
-            "Type": "AWS::AutoScaling::ScalingPolicy",
-            "Properties": {
-                "AdjustmentType": "ChangeInCapacity",
-                "AutoScalingGroupName": {
-                    "Ref": "WebServerAsg"
-                },
-                "Cooldown": "60",
-                "ScalingAdjustment": "-1"
+                "PolicyType": "TargetTrackingScaling",
+                "TargetTrackingConfiguration": {
+                    "PredefinedMetricSpecification": {
+                        "PredefinedMetricType": "ASGAverageCPUUtilization"
+                    },
+                    "TargetValue": 75.0
+                }
             }
         },
         "CPUAlarmHigh": {
@@ -1220,7 +1215,6 @@
                 ]
             }
         },
-
         "ALBListener": {
             "Type": "AWS::ElasticLoadBalancingV2::Listener",
             "Properties": {

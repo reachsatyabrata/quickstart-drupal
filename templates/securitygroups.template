@@ -13,6 +13,10 @@
             "ConstraintDescription": "Must be a valid IP range in x.x.x.x/x notation",
             "Description": "The CIDR block for VPC",
             "Type": "String"
+        },
+        "BastionSecurityGroupID": {
+            "Description": "ID of the Bastion Security Group (e.g., sg-7f16e910)",
+            "Type": "AWS::EC2::SecurityGroup::Id"
         }
     },
     "Resources": {
@@ -101,8 +105,8 @@
                         "IpProtocol": "tcp",
                         "FromPort": "22",
                         "ToPort": "22",
-                        "CidrIp": {
-                            "Ref": "VPCCIDR"
+                        "SourceSecurityGroupId": {
+                            "Ref": "BastionSecurityGroupID"
                         }
                     },
                     {
@@ -159,20 +163,6 @@
                         "CidrIp": {
                             "Ref": "VPCCIDR"
                         }
-                    }
-                ],
-                "SecurityGroupEgress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
-                        "CidrIp": "0.0.0.0/0"
-                    },
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "443",
-                        "ToPort": "443",
-                        "CidrIp": "0.0.0.0/0"
                     }
                 ]
             }

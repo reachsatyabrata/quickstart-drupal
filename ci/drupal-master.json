@@ -1,11 +1,11 @@
 [
     {
-        "ParameterKey": "AvailabilityZones",
-        "ParameterValue": "$[alfred_genaz_2]"
+        "ParameterKey": "AutoScalingNotificationEmail",
+        "ParameterValue": "foo@example.com"
     },
     {
-        "ParameterKey": "VPCCIDR",
-        "ParameterValue": "10.0.0.0/16"
+        "ParameterKey": "AvailabilityZones",
+        "ParameterValue": "$[taskcat_getaz_2]"
     },
     {
         "ParameterKey": "BastionAMIOS",
@@ -16,30 +16,6 @@
         "ParameterValue": "t2.micro"
     },
     {
-        "ParameterKey": "KeyPair",
-        "ParameterValue": "$[alfred_getkeypair]"
-    },
-    {
-        "ParameterKey": "RemoteAccessCIDR",
-        "ParameterValue": "10.0.0.0/16"
-    },
-    {
-        "ParameterKey": "DBInstanceClass",
-        "ParameterValue": "db.t2.small"
-    },
-    {
-        "ParameterKey": "DBMasterUsername",
-        "ParameterValue": "dbadmin"
-    },
-    {
-        "ParameterKey": "DBMasterUserPassword",
-        "ParameterValue": "$[alfred_genpass_8S]"
-    },
-    {
-        "ParameterKey": "DBMultiAZ",
-        "ParameterValue": "true"
-    },
-    {
         "ParameterKey": "DBAutoMinorVersionUpgrade",
         "ParameterValue": "true"
     },
@@ -48,67 +24,91 @@
         "ParameterValue": "7"
     },
     {
-        "ParameterKey": "WebServerInstanceType",
-        "ParameterValue": "t2.micro"
+        "ParameterKey": "DBInstanceClass",
+        "ParameterValue": "db.t2.small"
     },
     {
-        "ParameterKey": "WebServerMinSize",
-        "ParameterValue": "2"
+        "ParameterKey": "DBMasterUserPassword",
+        "ParameterValue": "$[alfred_genpass_8S]"
     },
     {
-        "ParameterKey": "WebServerMaxSize",
-        "ParameterValue": "3"
+        "ParameterKey": "DBMasterUsername",
+        "ParameterValue": "dbadmin"
     },
     {
-        "ParameterKey": "WebServerDesiredCapacity",
-        "ParameterValue": "2"
-    },
-    {
-        "ParameterKey": "AutoScalingNotificationEmail",
-        "ParameterValue": "foo@example.com"
-    },
-    {
-        "ParameterKey": "PhpVersion",
-        "ParameterValue": "php71"
-    },
-    {
-        "ParameterKey": "DrupalVersion",
-        "ParameterValue": "8"
-    },
-    {
-        "ParameterKey": "DrupalSiteName",
-        "ParameterValue": "Drupal Test Site"
-    },
-    {
-        "ParameterKey": "DrupalSiteAdminEmail",
-        "ParameterValue": "foo@example.com"
-    },
-    {
-        "ParameterKey": "DrupalSiteAdminUsername",
-        "ParameterValue": "drupaladmin"
-    },
-    {
-        "ParameterKey": "DrupalSiteAdminPassword",
-        "ParameterValue": "drupaladmin123"
+        "ParameterKey": "DBMultiAZ",
+        "ParameterValue": "true"
     },
     {
         "ParameterKey": "DrupalDbName",
         "ParameterValue": "drupaldb"
     },
     {
+        "ParameterKey": "DrupalDbPassword",
+        "ParameterValue": "$[alfred_genpass_8S]"
+    },
+    {
         "ParameterKey": "DrupalDbUsername",
         "ParameterValue": "drupal"
     },
     {
-        "ParameterKey": "DrupalDbPassword",
-        "ParameterValue": "drupal1234"
+        "ParameterKey": "DrupalSiteAdminEmail",
+        "ParameterValue": "foo@example.com"
+    },
+    {
+        "ParameterKey": "DrupalSiteAdminPassword",
+        "ParameterValue": "$[alfred_genpass_8S]"
+    },
+    {
+        "ParameterKey": "DrupalSiteAdminUsername",
+        "ParameterValue": "drupaladmin"
     },
     {
         "ParameterKey": "DrupalSiteDomain",
         "ParameterValue": "localhost"
     },
     {
+        "ParameterKey": "DrupalSiteName",
+        "ParameterValue": "Drupal Test Site"
+    },
+    {
+        "ParameterKey": "DrupalVersion",
+        "ParameterValue": "8"
+    },
+    {
+        "ParameterKey": "KeyPair",
+        "ParameterValue": "$[alfred_getkeypair]"
+    },
+    {
+        "ParameterKey": "PhpVersion",
+        "ParameterValue": "php71"
+    },
+    {
+        "ParameterKey": "RemoteAccessCIDR",
+        "ParameterValue": "10.0.0.0/16"
+    },
+    {
         "ParameterKey": "SSLCertificateId",
         "ParameterValue": ""
+    },
+    {
+        "ParameterKey": "VPCCIDR",
+        "ParameterValue": "10.0.0.0/16"
+    },
+    {
+        "ParameterKey": "WebServerDesiredCapacity",
+        "ParameterValue": "2"
+    },
+    {
+        "ParameterKey": "WebServerInstanceType",
+        "ParameterValue": "t2.micro"
+    },
+    {
+        "ParameterKey": "WebServerMaxSize",
+        "ParameterValue": "3"
+    },
+    {
+        "ParameterKey": "WebServerMinSize",
+        "ParameterValue": "2"
     }
 ]
