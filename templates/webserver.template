@@ -1248,27 +1248,24 @@
                         "HTTPS",
                         "HTTP"
                     ]
-                }
-                
-            }
-        },
-        "ALBListenerCertificate": {
-            "Condition": "UseSSL",
-            "Type": "AWS::ElasticLoadBalancingV2::ListenerCertificate",
-            "Properties": {
+                },
                 "Certificates": [
                     {
-                        "CertificateArn": {
-                            "Ref": "SSLCertificateId"
-                        }
+                        "Fn::If": [
+                            "UseSSL",
+                            {
+                                "CertificateArn": {
+                                    "Ref": "SSLCertificateId"
+                                }
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
                     }
-                ],
-                "ListenerArn": {
-                    "Ref": "ALBListener"
-                }
+                ]
             }
-        }  
-
+        }
     },
     "Outputs": {
         "ELBURL": {
