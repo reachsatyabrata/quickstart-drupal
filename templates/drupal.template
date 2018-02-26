@@ -6,11 +6,16 @@
             "ParameterGroups": [
                 {
                     "Label": {
-                        "default": "AWS Quick Start Configuration"
+                        "default": "Network Configuration"
                     },
                     "Parameters": [
-                        "QSS3BucketName",
-                        "QSS3KeyPrefix"
+                        "VPCID",
+                        "VPCCIDR",
+                        "PrivateSubnet1ID",
+                        "PrivateSubnet2ID",
+                        "PublicSubnet1ID",
+                        "PublicSubnet2ID",
+                        "BastionSecurityGroupID"
                     ]
                 },
                 {
@@ -59,16 +64,11 @@
                 },
                 {
                     "Label": {
-                        "default": "Network Configuration"
+                        "default": "AWS Quick Start Configuration"
                     },
                     "Parameters": [
-                        "VPCID",
-                        "VPCCIDR",
-                        "PrivateSubnet1ID",
-                        "PrivateSubnet2ID",
-                        "PublicSubnet1ID",
-                        "PublicSubnet2ID",
-                        "BastionSecurityGroupID"
+                        "QSS3BucketName",
+                        "QSS3KeyPrefix"
                     ]
                 }
             ],
