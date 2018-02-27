@@ -16,9 +16,9 @@ The AWS CloudFormation templates included with the Quick Start automate the foll
 
 You can also use the AWS CloudFormation templates as a starting point for your own implementation.
 
-![Quick Start architecture for Drupal on AWS]
+![Quick Start architecture for Drupal on AWS](https://d1.awsstatic.com/partner-network/QuickStart/datasheets/drupal-architecture-on-the-aws-cloud.png)
 
-For detailed information about the architecture and step-by-step instructions, see the [deployment guide](https://s3.amazonaws.com/quickstart-reference/drupal/latest/doc/drupal-on-the-aws-cloud.pdf).
+For detailed information about the architecture and step-by-step instructions, see the [deployment guide](https://s3.amazonaws.com/quickstart-reference/drupal/latest/doc/drupal-onhttps://d1.awsstatic.com/partner-network/QuickStart/datasheets/drupal-architecture-on-the-aws-cloud.70bccf1adc8cbbda937b6bcad5ab9bd86b162dbc.png)-the-aws-cloud.pdf).
 
 To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo. 
 If you'd like to submit code for this Quick Start, please review the [AWS Quick Start Contributor's Kit](https://aws-quickstart.github.io/).
