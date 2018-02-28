@@ -3,8 +3,6 @@
     "Description": "Drupal Security Groups template. (qs-1nqqf5kog)",
     "Parameters": {
         "VPC": {
-            "AllowedPattern": "vpc-[0-9a-z]{8}",
-            "Default": "vpc-xxxxxxxx",
             "Description": "VPC-ID of your existing Virtual Private Cloud (VPC) where you want to depoy RDS.",
             "Type": "AWS::EC2::VPC::Id"
         },
