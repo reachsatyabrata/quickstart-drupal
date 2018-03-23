@@ -60,6 +60,16 @@
                 },
                 {
                     "Label": {
+                        "default": "CDN - CloudFront Configuration"
+                    },
+                    "Parameters": [
+                        "CloudFrontEnable",
+                        "CloudFrontCustomSSLCertificateId",
+                        "CloudFrontPriceClass"
+                    ]
+                },
+                {
+                    "Label": {
                         "default": "AWS Quick Start Configuration"
                     },
                     "Parameters": [
@@ -294,7 +304,33 @@
             "Default": "",
             "Description": "The ARN of the SSL certificate to use for the load balancer. [optional]",
             "Type": "String"
+        },
+        "CloudFrontEnable": {
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
+            "Default": "true",
+            "Description": "Enable CloudFront Content Delivery Network",
+            "Type": "String"
+        },
+        "CloudFrontCustomSSLCertificateId": {
+            "Default": "",
+            "Description": "The ARN of the SSL certificate to use for CloudFront. (The Certificate must be in N.Virginia)",
+            "Type": "String"
+        },
+        "CloudFrontPriceClass":{
+            "AllowedValues":[
+                "use-all-edge-locations",
+                "use-only-us-canada-europe-asia",
+                "use-only-us-canada-europe"
+            ],
+            "Default": "use-all-edge-locations",
+            "Description": "Select the price class associated with the maximum price that you want to pay for CloudFront service. If you select a price class other than All, some of your users may experience higher latency.",
+            "Type": "String",
+            "ConstraintDescription": "Select a valid CloudFront Price Class."
         }
+
     },
     "Mappings": {
         "AWSAMIRegionMap": {
@@ -332,7 +368,7 @@
                 "AMZNLINUXHVM": "ami-84175ae8"
             },
             "us-east-1": {
-                "AMZNLINUXHVM": "ami-97785bed"
+                "AMZNLINUXHVM": "ami-97785bed" 
             },
             "us-east-2": {
                 "AMZNLINUXHVM": "ami-f63b1193"
@@ -343,6 +379,82 @@
             "us-west-2": {
                 "AMZNLINUXHVM": "ami-f2d3638a"
             }
+        }
+    },
+    "Rules":{
+        "SSLCheckLocalhost":{
+            "RuleCondition":{
+                "Fn::Not": [
+                    {
+                        "Fn::Equals": [
+                            {
+                                "Ref": "SSLCertificateId"
+                            },
+                            ""
+                        ]
+                    }
+                ]
+            },
+            "Assertions":[
+                {
+                    "Assert": {
+                        "Fn::Not": [
+                            {
+                                "Fn::Equals": [
+                                    {
+                                        "Ref": "DrupalSiteDomain"
+                                    },
+                                    "localhost"
+                                ]
+                            }
+                        ]
+                    },
+                    "AssertDescription": "DrupalSiteDomain cannot be \"localhost\" when using HTTPS for your Drupal Site"
+                }
+            ]
+        },
+        "CloudFrontSSLCheck":{
+            "RuleCondition":{
+                "Fn::And":[
+                    {
+                        "Fn::Not": [
+                            {
+                                "Fn::Equals": [
+                                    {
+                                        "Ref": "SSLCertificateId"
+                                    },
+                                    ""
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Fn::Equals":[
+                            {
+                                "Ref": "CloudFrontEnable"
+                            },
+                            "true"
+                        ]
+                    }
+                ]
+            },
+            "Assertions":[
+                {
+                    "Assert":{
+                        "Fn::Not":[
+                            {
+                                "Fn::Equals":[
+                                    {
+                                        "Ref": "CloudFrontCustomSSLCertificateId"
+                                    },
+                                    ""
+                                ]
+                            }
+                        ]
+                    },
+                    "AssertDescription": "CloudFrontCustomSSLCertificateId must not be empty when CloudFront is enabled and SSL is used for your Drupal Site"
+                }   
+            ]
         }
     },
     "Conditions": {
@@ -372,6 +484,14 @@
                         ""
                     ]
                 }
+            ]
+        },
+        "DrupalCdnModuleCondition": {
+            "Fn::Equals": [
+                {
+                    "Ref": "CloudFrontEnable"
+                },
+                "true"
             ]
         }
     },
@@ -431,6 +551,47 @@
                 ]
             }
         },
+        "CloudFrontStack":{
+            "Type": "AWS::CloudFormation::Stack",
+            "Condition": "DrupalCdnModuleCondition",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/cloudfront.template"
+                },
+                "Parameters": {
+                    "OriginDnsName":{
+                        "Fn::If":[
+                            "UseSSL",
+                            {
+                                "Ref": "DrupalSiteDomain"
+                            },
+                            {
+                                "Fn::GetAtt": [
+                                    "ApplicationLoadBalancer",
+                                    "DNSName"
+                                ]
+                            }
+                        ]
+                        
+                    },
+                    "OriginAccessProtocol":{
+                        "Fn::If": [
+                            "UseSSL",
+                            "https-only",
+                            "http-only"
+                        ]
+                    },
+                    "CustomSSLCertificateId":{
+                        "Fn::If":[
+                            "UseSSL",
+                            {"Ref":"CloudFrontCustomSSLCertificateId"},
+                            ""
+                        ]
+                    },
+                    "CloudFrontPriceClass":{"Ref": "CloudFrontPriceClass"}
+                }
+            }
+        },       
         "DrupalAMIEC2Instance": {
             "Type": "AWS::EC2::Instance",
             "DependsOn": [
@@ -456,6 +617,20 @@
                                 ]
                             },
                             "drupal"
+                        ],
+                        "drupal_cdn_module":[
+                            "download-cdn-module",
+                            {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "install-cdn-module-",
+                                        {
+                                            "Ref": "DrupalVersion"
+                                        }
+                                    ]
+                                ]
+                            }
                         ]
                     },
                     "install_cfn": {
@@ -751,6 +926,23 @@
                                             "        Order allow,deny\n",
                                             "        allow from all\n",
                                             "    </Directory>\n",
+                                            {
+                                                "Fn::If":[
+                                                    "UseSSL",
+                                                    {
+                                                        "Fn::Join":[
+                                                            "",
+                                                            [
+                                                                "    RewriteEngine On\n",
+                                                                "    RewriteCond %{HTTP:X-Forwarded-Proto} =http\n",
+                                                                "    RewriteRule .* https://%{HTTP:Host}%{REQUEST_URI} [L,R=permanent]\n"
+
+                                                            ]
+                                                        ]
+                                                    },
+                                                    ""
+                                                ]
+                                            },
                                             "    LogLevel warn\n",
                                             "    ErrorLog /var/log/httpd/drupal-error.log\n",
                                             "    CustomLog /var/log/httpd/drupal-access.log combined\n",
@@ -866,6 +1058,16 @@
                             "08_drupal_files_folder_permission": {
                                 "command": "chown -R apache:apache /var/www/drupal/sites/default/files",
                                 "test": "test -e /var/www/drupal/sites/default/files"
+                            },
+                            "09_configure_drupal_https":{
+                                "cwd": "/var/www/drupal/sites/default",
+                                "command":{
+                                    "Fn::If":[
+                                        "UseSSL",
+                                        "echo \"\\$_SERVER['HTTPS'] = 'On';\" >> settings.php",
+                                        "" 
+                                    ]
+                                }
                             }
                         },
                         "services": {
@@ -877,6 +1079,112 @@
                                         "/etc/httpd/conf.d/drupal.conf",
                                         "/etc/php.ini",
                                         "/var/www/drupal/sites/default/settings.php"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "download-cdn-module":{
+                        "commands":{
+                            "01_download_cdn_module": {
+                                "cwd": "/var/www/drupal",
+                                "command": "/root/.composer/vendor/bin/drush dl cdn",
+                                "env": {
+                                    "HOME": "/root",
+                                    "DRUSH_PHP": "/usr/bin/php"
+                                }
+                            }
+                        }
+                    },
+                    "install-cdn-module-8":{
+                        "commands":{
+                            "01_edit_cdn_settings_file": {
+                                "cwd": "/var/www/drupal/modules/cdn/config/install",
+                                "command": {"Fn::If":[
+                                        "DrupalCdnModuleCondition",
+                                        {
+                                            "Fn::Join":[
+                                                "",
+                                                [
+                                                    "sed -i 's/domain: null/domain: ",
+                                                    {
+                                                        "Fn::GetAtt": [
+                                                            "CloudFrontStack",
+                                                            "Outputs.CdnUrl"
+                                                        ]
+                                                    },
+                                                    "/g' cdn.settings.yml",
+                                                    " && ",
+                                                    "sed -i 's/status: false/status: true/g' cdn.settings.yml"
+                                                ]
+                                            ]
+                                        },
+                                        ""
+                                    ]
+                                }
+                            },
+                            "02_enable_cdn_module": {
+                                "cwd": "/var/www/drupal",
+                                "command": "/root/.composer/vendor/bin/drush en -y cdn cdn_ui",
+                                "env": {
+                                    "HOME": "/root",
+                                    "DRUSH_PHP": "/usr/bin/php"
+                                }
+                            }
+                        }
+                    },
+                    "install-cdn-module-7":{
+                        "commands":{
+                            "01_enable_cdn_module": {
+                                "cwd": "/var/www/drupal",
+                                "command": "/root/.composer/vendor/bin/drush en -y cdn",
+                                "env": {
+                                    "HOME": "/root",
+                                    "DRUSH_PHP": "/usr/bin/php"
+                                }
+                            },
+                            "02_configure_cdn_module":{
+                                "cwd": "/var/www/drupal",
+                                "command": {
+                                    "Fn::If":[
+                                        "DrupalCdnModuleCondition",
+                                        {
+                                            "Fn::Join":[
+                                                "",
+                                                [
+                                                    "/root/.composer/vendor/bin/drush vset preprocess_js TRUE",
+                                                    " && ",
+                                                    "/root/.composer/vendor/bin/drush vset preprocess_css TRUE",
+                                                    " && ",
+                                                    "/root/.composer/vendor/bin/drush vset cdn_status '2'",
+                                                    " && ",
+                                                    "/root/.composer/vendor/bin/drush vset cdn_basic_mapping \"//",
+                                                    {
+                                                        "Fn::GetAtt": [
+                                                            "CloudFrontStack",
+                                                            "Outputs.CdnUrl"
+                                                        ]
+                                                    },
+                                                    "|.css .js .jpg .jpeg .png\"",
+                                                    {
+                                                        "Fn::If":[
+                                                            "UseSSL",
+                                                            {
+                                                                "Fn::Join":[
+                                                                    "",
+                                                                    [
+                                                                        " && ",
+                                                                        "/root/.composer/vendor/bin/drush vset cdn_https_support TRUE"
+                                                                    ]
+                                                                ]
+                                                            },
+                                                            ""
+                                                        ]
+                                                    }
+                                                ]
+                                            ]
+                                        },
+                                        ""   
                                     ]
                                 }
                             }
@@ -935,6 +1243,32 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
+                                {
+                                    "Fn::If":[
+                                        "DrupalCdnModuleCondition",
+                                        {
+                                            "Fn::Join":[
+                                                "",
+                                                [
+                                                    "/opt/aws/bin/cfn-init -v ",
+                                                    "--stack ",
+                                                    {
+                                                        "Ref": "AWS::StackName"
+                                                    },
+                                                    " ",
+                                                    "--resource DrupalAMIEC2Instance ",
+                                                    "--configsets drupal_cdn_module ",
+                                                    "--region ",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "\n"
+                                                ]
+                                            ]
+                                        },
+                                        ""
+                                    ]
+                                },
                                 "/opt/aws/bin/cfn-signal -e $? --stack ",
                                 {
                                     "Ref": "AWS::StackName"
@@ -1163,8 +1497,9 @@
                 ]
             }
         },
-        "ALBListener": {
+        "ALBHTTPSListener": {
             "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Condition": "UseSSL", 
             "Properties": {
                 "DefaultActions": [
                     {
@@ -1177,20 +1512,8 @@
                 "LoadBalancerArn": {
                     "Ref": "ApplicationLoadBalancer"
                 },
-                "Port": {
-                    "Fn::If": [
-                        "UseSSL",
-                        443,
-                        80
-                    ]
-                },
-                "Protocol": {
-                    "Fn::If": [
-                        "UseSSL",
-                        "HTTPS",
-                        "HTTP"
-                    ]
-                },
+                "Port": 443,
+                "Protocol": "HTTPS",
                 "Certificates": [
                     {
                         "Fn::If": [
@@ -1207,11 +1530,30 @@
                     }
                 ]
             }
+        },
+        "ALBHTTPListener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener", 
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "ALBTargetGroup"
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "ApplicationLoadBalancer"
+                },
+                "Port": 80,
+                "Protocol": "HTTP"
+            }
         }
+        
     },
     "Outputs": {
         "ELBURL": {
-            "Description": "The URL of the ELB that you should use to create a CNAME/ALIAS DNS recrod to point to your Domain e.g. mysite.com",
+            "Description": "The URL of the ELB that you should use to create a CNAME/ALIAS DNS record to point to your Domain e.g. mysite.com",
             "Value": {
                 "Fn::Join": [
                     "",

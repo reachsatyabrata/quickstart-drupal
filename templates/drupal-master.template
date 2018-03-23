@@ -73,6 +73,16 @@
                 },
                 {
                     "Label": {
+                        "default": "CDN - CloudFront Configuration"
+                    },
+                    "Parameters": [
+                        "CloudFrontEnable",
+                        "CloudFrontCustomSSLCertificateId",
+                        "CloudFrontPriceClass"
+                    ]
+                },
+                {
+                    "Label": {
                         "default": "AWS Quick Start Configuration"
                     },
                     "Parameters": [
@@ -183,6 +193,15 @@
                 },
                 "WebServerMinSize": {
                     "default": "Min number of Instances"
+                },
+                "CloudFrontEnable":{
+                    "default": "Enable CloudFront"
+                },
+                "CloudFrontCustomSSLCertificateId":{
+                    "default": "CloudFront Custom SSL certificate ARN"
+                },
+                "CloudFrontPriceClass":{
+                    "dfault": "CloudFront PriceClass"
                 }
             }
         }
@@ -487,6 +506,31 @@
             "Default": "1",
             "Description": "Minimum number of web server instances in Auto Scaling group",
             "Type": "Number"
+        },
+        "CloudFrontEnable": {
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
+            "Default": "true",
+            "Description": "Enable CloudFront Content Delivery Network",
+            "Type": "String"
+        },
+        "CloudFrontCustomSSLCertificateId": {
+            "Default": "",
+            "Description": "The ARN of the SSL certificate to use for CloudFront. (The Certificate must be in ACM in N.Virginia)",
+            "Type": "String"
+        },
+        "CloudFrontPriceClass":{
+            "AllowedValues":[
+                "use-all-edge-locations",
+                "use-only-us-canada-europe-asia",
+                "use-only-us-canada-europe"
+            ],
+            "Default": "use-all-edge-locations",
+            "Description": "Select the price class associated with the maximum price that you want to pay for CloudFront service. If you select a price class other than All, some of your users may experience higher latency.",
+            "Type": "String",
+            "ConstraintDescription": "Select a valid CloudFront Price Class."
         }
     },
     "Rules": {
@@ -510,6 +554,80 @@
                     },
                     "AssertDescription": "This Quick Start uses Amazon EFS which is only available in the US East (N. Virginia), US East (Ohio), US West (Oregon), EU (Frankfurt), EU (Ireland) and Asia Pacific (Sydney) regions. Please launch the stack in one of these regions"
                 }
+            ]
+        },
+        "SSLCheckLocalhost":{
+            "RuleCondition":{
+                "Fn::Not": [
+                    {
+                        "Fn::Equals": [
+                            {
+                                "Ref": "SSLCertificateId"
+                            },
+                            ""
+                        ]
+                    }
+                ]
+            },
+            "Assertions":[
+                {
+                    "Assert": {
+                        "Fn::Not": [
+                            {
+                                "Fn::Equals": [
+                                    {
+                                        "Ref": "DrupalSiteDomain"
+                                    },
+                                    "localhost"
+                                ]
+                            }
+                        ]
+                    },
+                    "AssertDescription": "DrupalSiteDomain cannot be \"localhost\" when using HTTPS for your Drupal Site"
+                }
+            ]
+        },
+        "CloudFrontSSLCheck":{
+            "RuleCondition":{
+                "Fn::And":[
+                    {
+                        "Fn::Not": [
+                            {
+                                "Fn::Equals": [
+                                    {
+                                        "Ref": "SSLCertificateId"
+                                    },
+                                    ""
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Fn::Equals":[
+                            {
+                                "Ref": "CloudFrontEnable"
+                            },
+                            "true"
+                        ]
+                    }
+                ]
+            },
+            "Assertions":[
+                {
+                    "Assert":{
+                        "Fn::Not":[
+                            {
+                                "Fn::Equals":[
+                                    {
+                                        "Ref": "CloudFrontCustomSSLCertificateId"
+                                    },
+                                    ""
+                                ]
+                            }
+                        ]
+                    },
+                    "AssertDescription": "CloudFrontCustomSSLCertificateId must not be empty when CloudFront is enabled and SSL is used for your Drupal Site"
+                }   
             ]
         }
     },
@@ -712,6 +830,15 @@
                     },
                     "DrupalSiteDomain": {
                         "Ref": "DrupalSiteDomain"
+                    },
+                    "CloudFrontEnable":{
+                        "Ref": "CloudFrontEnable"
+                    },
+                    "CloudFrontCustomSSLCertificateId":{
+                        "Ref": "CloudFrontCustomSSLCertificateId"
+                    },
+                    "CloudFrontPriceClass":{
+                        "Ref": "CloudFrontPriceClass"
                     },
                     "QSS3BucketName": {
                         "Ref": "QSS3BucketName"
