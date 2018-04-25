@@ -29,6 +29,15 @@
                     ]
                 },
                 {
+                    "Label":{
+                        "default": "Drupal Site Domain Configuration"
+                    },
+                    "Parameters":[
+                        "Route53HostedZoneId",
+                        "DrupalSiteDomain"
+                    ]
+                },
+                {
                     "Label": {
                         "default": "Aurora Database Configuration"
                     },
@@ -54,8 +63,7 @@
                         "DrupalSiteAdminPassword",
                         "DrupalDbName",
                         "DrupalDbUsername",
-                        "DrupalDbPassword",
-                        "DrupalSiteDomain"
+                        "DrupalDbPassword"
                     ]
                 },
                 {
@@ -69,6 +77,17 @@
                         "WebServerDesiredCapacity",
                         "AutoScalingNotificationEmail",
                         "SSLCertificateId"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "ElastiCache Configuration"
+                    },
+                    "Parameters": [
+                        "ElastiCacheEnable",
+                        "ElastiCacheAutoMinorVersionUpgrade",
+                        "ElastiCacheNodeType",
+                        "ElastiCacheNumberOfNodes"
                     ]
                 },
                 {
@@ -202,6 +221,21 @@
                 },
                 "CloudFrontPriceClass":{
                     "dfault": "CloudFront PriceClass"
+                },
+                "Route53HostedZoneId":{
+                    "default": "Route53 Hosted Zone ID"
+                },
+                "ElastiCacheEnable":{
+                    "default": "Enable ElastiCache"
+                },
+                "ElastiCacheAutoMinorVersionUpgrade":{
+                    "default": "Enable ElastiCache Auto Minor Version Upgrade"
+                },
+                "ElastiCacheNodeType":{
+                    "default": "ElastiCache Node Type"
+                },
+                "ElastiCacheNumberOfNodes":{
+                    "default": "Number of ElastiCache Nodes"
                 }
             }
         }
@@ -354,8 +388,9 @@
             "Type": "String"
         },
         "DrupalSiteDomain": {
-            "Default": "localhost",
             "Description": "Domain name of the site. e.g. mywebsite.com. You must have the domain name registered",
+            "AllowedPattern":"(?!-)[a-zA-Z0-9-.]*(?<!-)",
+            "ConstraintDescription":"must be a valid fully-qualified domain name.",
             "Type": "String"
         },
         "DrupalSiteName": {
@@ -531,6 +566,66 @@
             "Description": "Select the price class associated with the maximum price that you want to pay for CloudFront service. If you select a price class other than All, some of your users may experience higher latency.",
             "Type": "String",
             "ConstraintDescription": "Select a valid CloudFront Price Class."
+        },
+        "Route53HostedZoneId":{
+            "Description": "Route53 Hosted Zone ID",
+            "Type": "AWS::Route53::HostedZone::Id"
+        },
+        "ElastiCacheEnable": {
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
+            "Default": "true",
+            "Description": "Enable CloudFront Content Delivery Network",
+            "Type": "String"
+        },
+        "ElastiCacheAutoMinorVersionUpgrade":{
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
+            "Default": "true",
+            "Description": "Select true/false to setup Auto Minor Version upgrade",
+            "Type": "String"
+        },
+        "ElastiCacheNodeType": {
+            "AllowedValues": [
+                "cache.t2.micro",
+                "cache.t2.small",
+                "cache.t2.medium",
+                "cache.m3.medium",
+                "cache.m3.large",
+                "cache.m3.xlarge",
+                "cache.m3.2xlarge",
+                "cache.m4.large",
+                "cache.m4.xlarge",
+                "cache.m4.2xlarge",
+                "cache.m4.4xlarge",
+                "cache.m4.10xlarge",
+                "cache.r3.large",
+                "cache.r3.xlarge",
+                "cache.r3.2xlarge",
+                "cache.r3.4xlarge",
+                "cache.r3.8xlarge",
+                "cache.r4.large",
+                "cache.r4.xlarge",
+                "cache.r4.2xlarge",
+                "cache.r4.4xlarge",
+                "cache.r4.8xlarge",
+                "cache.r4.16xlarge"
+            ],
+            "ConstraintDescription": "Must select a valid ElastiCache node type.",
+            "Default": "cache.t2.micro",
+            "Description": "The compute and memory capacity of nodes in a cache cluster.",
+            "Type": "String"
+        },
+        "ElastiCacheNumberOfNodes": {
+            "Default": "2",
+            "MinValue": "1",
+            "MaxValue": "20",
+            "Description": "The number of cache nodes that the cache cluster should have.",
+            "Type": "Number"
         }
     },
     "Rules": {
@@ -553,37 +648,6 @@
                         ]
                     },
                     "AssertDescription": "This Quick Start uses Amazon EFS which is only available in the US East (N. Virginia), US East (Ohio), US West (Oregon), EU (Frankfurt), EU (Ireland) and Asia Pacific (Sydney) regions. Please launch the stack in one of these regions"
-                }
-            ]
-        },
-        "SSLCheckLocalhost":{
-            "RuleCondition":{
-                "Fn::Not": [
-                    {
-                        "Fn::Equals": [
-                            {
-                                "Ref": "SSLCertificateId"
-                            },
-                            ""
-                        ]
-                    }
-                ]
-            },
-            "Assertions":[
-                {
-                    "Assert": {
-                        "Fn::Not": [
-                            {
-                                "Fn::Equals": [
-                                    {
-                                        "Ref": "DrupalSiteDomain"
-                                    },
-                                    "localhost"
-                                ]
-                            }
-                        ]
-                    },
-                    "AssertDescription": "DrupalSiteDomain cannot be \"localhost\" when using HTTPS for your Drupal Site"
                 }
             ]
         },
@@ -840,6 +904,21 @@
                     "CloudFrontPriceClass":{
                         "Ref": "CloudFrontPriceClass"
                     },
+                    "Route53HostedZoneId":{
+                        "Ref": "Route53HostedZoneId"
+                    },
+                    "EnableElastiCache": {
+                        "Ref": "ElastiCacheEnable"
+                    },
+                    "ElastiCacheAutoMinorVersionUpgrade":{
+                        "Ref": "ElastiCacheAutoMinorVersionUpgrade"
+                    },
+                    "ElastiCacheNodeType":{
+                        "Ref": "ElastiCacheNodeType"
+                    },
+                    "ElastiCacheNumberOfNodes":{
+                        "Ref": "ElastiCacheNumberOfNodes"
+                    },
                     "QSS3BucketName": {
                         "Ref": "QSS3BucketName"
                     },
@@ -858,7 +937,11 @@
                     "DrupalStack",
                     "Outputs.ELBURL"
                 ]
-            }
+            }  
+        },
+        "DrupalSiteUrl":{
+            "Description": "Drupal Site URL",
+            "Value": {"Ref": "DrupalSiteDomain"}
         }
     }
 }

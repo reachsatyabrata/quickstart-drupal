@@ -266,7 +266,8 @@
         },
         "DrupalSiteDomain": {
             "Description": "Domain name of the site. e.g. mywebsite.com. You must have the domain name registered",
-            "Default": "localhost",
+            "AllowedPattern":"(?!-)[a-zA-Z0-9-.]*(?<!-)",
+            "ConstraintDescription":"must be a valid fully-qualified domain name.",
             "Type": "String"
         },
         "WebServerMinSize": {
@@ -329,8 +330,25 @@
             "Description": "Select the price class associated with the maximum price that you want to pay for CloudFront service. If you select a price class other than All, some of your users may experience higher latency.",
             "Type": "String",
             "ConstraintDescription": "Select a valid CloudFront Price Class."
+        },
+        "Route53HostedZoneId":{
+            "Description": "Route53 Hosted Zone ID",
+            "Type": "AWS::Route53::HostedZone::Id"
+        },
+        "EnableElastiCache":{
+            "Description": "Enable ElastiCache",
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
+            "Default": "true",
+            "Type": "String"
+        },
+        "ElastiCacheClusterId":{
+            "Description": "ElastiCache Cluster Id.",
+            "Type": "String",
+            "Default": ""
         }
-
     },
     "Mappings": {
         "AWSAMIRegionMap": {
@@ -382,37 +400,6 @@
         }
     },
     "Rules":{
-        "SSLCheckLocalhost":{
-            "RuleCondition":{
-                "Fn::Not": [
-                    {
-                        "Fn::Equals": [
-                            {
-                                "Ref": "SSLCertificateId"
-                            },
-                            ""
-                        ]
-                    }
-                ]
-            },
-            "Assertions":[
-                {
-                    "Assert": {
-                        "Fn::Not": [
-                            {
-                                "Fn::Equals": [
-                                    {
-                                        "Ref": "DrupalSiteDomain"
-                                    },
-                                    "localhost"
-                                ]
-                            }
-                        ]
-                    },
-                    "AssertDescription": "DrupalSiteDomain cannot be \"localhost\" when using HTTPS for your Drupal Site"
-                }
-            ]
-        },
         "CloudFrontSSLCheck":{
             "RuleCondition":{
                 "Fn::And":[
@@ -458,14 +445,6 @@
         }
     },
     "Conditions": {
-        "DomainIsLocalhost": {
-            "Fn::Equals": [
-                {
-                    "Ref": "DrupalSiteDomain"
-                },
-                "localhost"
-            ]
-        },
         "GovCloudCondition": {
             "Fn::Equals": [
                 {
@@ -490,6 +469,14 @@
             "Fn::Equals": [
                 {
                     "Ref": "CloudFrontEnable"
+                },
+                "true"
+            ]
+        },
+        "EnableElastiCacheCondition":{
+            "Fn::Equals": [
+                {
+                    "Ref": "EnableElastiCache"
                 },
                 "true"
             ]
@@ -551,47 +538,55 @@
                 ]
             }
         },
-        "CloudFrontStack":{
-            "Type": "AWS::CloudFormation::Stack",
-            "Condition": "DrupalCdnModuleCondition",
-            "Properties": {
-                "TemplateURL": {
-                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/cloudfront.template"
-                },
-                "Parameters": {
-                    "OriginDnsName":{
-                        "Fn::If":[
-                            "UseSSL",
-                            {
-                                "Ref": "DrupalSiteDomain"
+        "WebServerInstanceRole":{
+            "Type" : "AWS::IAM::Role",
+            "Properties" : {
+                "Path" : "/",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                              "Service": "ec2.amazonaws.com"
                             },
-                            {
-                                "Fn::GetAtt": [
-                                    "ApplicationLoadBalancer",
-                                    "DNSName"
-                                ]
-                            }
-                        ]
-                        
-                    },
-                    "OriginAccessProtocol":{
-                        "Fn::If": [
-                            "UseSSL",
-                            "https-only",
-                            "http-only"
-                        ]
-                    },
-                    "CustomSSLCertificateId":{
-                        "Fn::If":[
-                            "UseSSL",
-                            {"Ref":"CloudFrontCustomSSLCertificateId"},
-                            ""
-                        ]
-                    },
-                    "CloudFrontPriceClass":{"Ref": "CloudFrontPriceClass"}
+                            "Action": "sts:AssumeRole"
+                          }
+                    ]
                 }
             }
-        },       
+        },
+        "WebServerInstanceProfile":{
+            "Type" : "AWS::IAM::InstanceProfile",
+            "Properties" : {
+                "Path" : "/",
+                "Roles" : [
+                    {"Ref": "WebServerInstanceRole"}
+                ]
+            }
+        }, 
+        "DescribeElastiCachePolicy":{
+            "Type" : "AWS::IAM::Policy",
+            "Condition": "EnableElastiCacheCondition",
+            "Properties" : {
+                "PolicyName" : "DescirbeElastiCacheClusterPolicy",
+                "PolicyDocument" : {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "elasticache:Describe*",
+                                "elasticache:List*"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": "*"
+                        }
+                    ]
+                },
+                "Roles":[
+                    {"Ref": "WebServerInstanceRole"}
+                ]
+            }
+        },   
         "DrupalAMIEC2Instance": {
             "Type": "AWS::EC2::Instance",
             "DependsOn": [
@@ -616,7 +611,14 @@
                                     ]
                                 ]
                             },
-                            "drupal"
+                            "drupal",
+                            {
+                                "Fn::If":[
+                                    "EnableElastiCacheCondition",
+                                    {"Fn::Join":["",["memcached-drupal-", {"Ref":"DrupalVersion"}]]},
+                                    {"Ref" : "AWS::NoValue"}
+                                ]
+                            }
                         ],
                         "drupal_cdn_module":[
                             "download-cdn-module",
@@ -837,7 +839,8 @@
                                 "php56-pecl-ssh2": [],
                                 "php56-mbstring": [],
                                 "php56-fpm": [],
-                                "php56-opcache": []
+                                "php56-opcache": [],
+                                "php56-pecl-memcached": []
                             }
                         }
                     },
@@ -858,7 +861,8 @@
                                 "php70-pecl-ssh2": [],
                                 "php70-mbstring": [],
                                 "php70-fpm": [],
-                                "php70-opcache": []
+                                "php70-opcache": [],
+                                "php70-pecl-memcached": []
                             }
                         }
                     },
@@ -878,7 +882,8 @@
                                 "php71-pecl-ssh2": [],
                                 "php71-mbstring": [],
                                 "php71-fpm": [],
-                                "php71-opcache": []
+                                "php71-opcache": [],
+                                "php71-pecl-memcached": []
                             }
                         }
                     },
@@ -902,20 +907,14 @@
                                             "\n",
                                             "    ServerAlias ",
                                             {
-                                                "Fn::If": [
-                                                    "DomainIsLocalhost",
-                                                    "localhost",
-                                                    {
-                                                        "Fn::Join": [
-                                                            "",
-                                                            [
-                                                                "www.",
-                                                                {
-                                                                    "Ref": "DrupalSiteDomain"
-                                                                }
-                                                            ]
-                                                        ]
-                                                    }
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        "www.",
+                                                        {
+                                                            "Ref": "DrupalSiteDomain"
+                                                        }
+                                                    ]
                                                 ]
                                             },
                                             "\n",
@@ -1084,6 +1083,126 @@
                             }
                         }
                     },
+                    "memcached-drupal-7":{
+                        "files":{
+                            "/tmp/drupalCacheConfig.sh":{
+                                "content":{
+                                    "Fn::Join":[
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            "printf \"\n",
+                                            "/**\n",
+                                            "* Memcache Configuration\n",
+                                            "*/\n",
+                                            "\\$conf['cache_backends'][] = 'sites/all/modules/memcache/memcache.inc';\n",
+                                            "\\$conf['cache_default_class'] = 'MemCacheDrupal';\n",
+                                            "\\$conf['cache_class_cache_form'] = 'DrupalDatabaseCache';\n",
+                                            "\\$conf['memcache_key_prefix'] = 'mc1';\n",
+                                            "\\$conf['page_cache_without_database'] = TRUE;\n",
+                                            "\\$conf['page_cache_invoke_hooks'] = FALSE;\n",
+                                            "\\$conf['memcache_servers'] = array(\\n\"\n",
+                                            "for node in \\\n",
+                                            "`aws elasticache describe-cache-clusters --show-cache-node-info \\\n",
+                                            "--cache-cluster-id ", {"Ref": "ElastiCacheClusterId"}, " \\\n",
+                                            "--query 'CacheClusters[0].CacheNodes[*].Endpoint.[Address, Port]' \\\n",
+                                            "--output=text --region='",{"Ref": "AWS::Region"},"'\\\n",
+                                            "| sed -E -e 's/[[:space:]]+/:/g'`\n",
+                                            "do\n",
+                                            "printf \"    '\"$node\"' => 'default',\\n\"\n",
+                                            "done\n",
+                                            "printf \");\n",
+                                            "\\$conf['memcache_bins'] = array(\n",
+                                            "    'cache' => 'default',\n",
+                                            ");\""
+                                        ]
+                                    ]
+                                },
+                                "mode": "000500",
+                                "owner": "root",
+                                "group": "root"
+                            }
+                        },
+                        "commands":{
+                            "01_download_memcahe_module":{
+                                "cwd": "/var/www/drupal",
+                                "command": "/root/.composer/vendor/bin/drush dl memcache",
+                                "env": {
+                                    "HOME": "/root",
+                                    "DRUSH_PHP": "/usr/bin/php"
+                                }
+                            },
+                            "02_append_memcache_settings":{
+                                "cwd": "/var/www/drupal/sites/default/",
+                                "command": "/tmp/drupalCacheConfig.sh >> settings.php"
+                            },
+                            "03_enable_memcache_modules":{
+                                "cwd": "/var/www/drupal",
+                                "command": "/root/.composer/vendor/bin/drush en -y memcache memcache_admin",
+                                "env": {
+                                    "HOME": "/root",
+                                    "DRUSH_PHP": "/usr/bin/php"
+                                }
+                            },
+                            "04_clear_cache":{
+                                "cwd": "/var/www/drupal",
+                                "command": "/root/.composer/vendor/bin/drush cc drush",
+                                "env": {
+                                    "HOME": "/root",
+                                    "DRUSH_PHP": "/usr/bin/php"
+                                }
+                            }
+                        }
+                    },
+                    "memcached-drupal-8":{
+                        "files":{
+                            "/tmp/drupalCacheConfig.sh":{
+                                "content":{
+                                    "Fn::Join":[
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            "printf \"\n",
+                                            "// Memcache Configuration\n",
+                                            "\\$settings['cache']['default'] = 'cache.backend.memcache_storage';\n",
+                                            "\\$settings['memcache_storage']['key_prefix'] = 'dr8';\n",
+                                            "\\$settings['memcache_storage']['bins'] = [\n",
+                                            "    'cache' => 'default',\n",
+                                            "];\n",
+                                            "\\$settings['memcache_storage']['memcached_servers'] =  [\\n\"\n",
+                                            "for node in \\\n",
+                                            "`aws elasticache describe-cache-clusters --show-cache-node-info \\\n",
+                                            "--cache-cluster-id dru-el-1gj1lln1l2egc \\\n",
+                                            "--query 'CacheClusters[0].CacheNodes[*].Endpoint.[Address, Port]' \\\n",
+                                            "--output=text --region='us-east-1'\\\n",
+                                            "| sed -E -e 's/[[:space:]]+/:/g'`\n",
+                                            "do\n",
+                                            "printf \"    '\"$node\"' => 'default',\\n\"\n",
+                                            "done\n",
+                                            "printf \"];\"\n"
+                                        ]   
+                                    ]
+                                },
+                                "mode": "000500",
+                                "owner": "root",
+                                "group": "root"
+                            }
+                        },
+                        "commands":{
+                            "01_enable_memcahe":{
+                                "cwd": "/var/www/drupal",
+                                "command": "/root/.composer/vendor/bin/drush en -y memcache memcache_storage",
+                                "env": {
+                                    "HOME": "/root",
+                                    "DRUSH_PHP": "/usr/bin/php"
+                                }
+                            },
+                            "02_append_memcache_settings":{
+                                "cwd": "/var/www/drupal/sites/default/",
+                                "command": "/tmp/drupalCacheConfig.sh >> settings.php"
+                            }
+                        }
+                    },
                     "download-cdn-module":{
                         "commands":{
                             "01_download_cdn_module": {
@@ -1220,6 +1339,9 @@
                 ],
                 "KeyName": {
                     "Ref": "KeyPair"
+                },
+                "IamInstanceProfile":{
+                    "Ref": "WebServerInstanceProfile"
                 },
                 "UserData": {
                     "Fn::Base64": {
@@ -1548,8 +1670,54 @@
                 "Port": 80,
                 "Protocol": "HTTP"
             }
+        },
+        "Route53Stack":{
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/route53.template"
+                },
+                "Parameters": {
+                    "HostedZoneId": {"Ref": "Route53HostedZoneId"},
+                    "DomainName": {"Ref": "DrupalSiteDomain"},
+                    "ElbDnsName": {
+                        "Fn::GetAtt": [
+                            "ApplicationLoadBalancer",
+                            "DNSName"
+                        ]
+                    },
+                    "ElbHostedZoneId":{"Fn::GetAtt":["ApplicationLoadBalancer", "CanonicalHostedZoneID"]}
+                }
+            }
+        },
+        "CloudFrontStack":{
+            "Type": "AWS::CloudFormation::Stack",
+            "Condition": "DrupalCdnModuleCondition",
+            "DependsOn":["Route53Stack"],
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/cloudfront.template"
+                },
+                "Parameters": {
+                    "OriginDnsName":{"Ref": "DrupalSiteDomain"},
+                    "OriginAccessProtocol":{
+                        "Fn::If": [
+                            "UseSSL",
+                            "https-only",
+                            "http-only"
+                        ]
+                    },
+                    "CustomSSLCertificateId":{
+                        "Fn::If":[
+                            "UseSSL",
+                            {"Ref":"CloudFrontCustomSSLCertificateId"},
+                            ""
+                        ]
+                    },
+                    "CloudFrontPriceClass":{"Ref": "CloudFrontPriceClass"}
+                }
+            }
         }
-        
     },
     "Outputs": {
         "ELBURL": {
