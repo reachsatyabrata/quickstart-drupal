@@ -266,8 +266,8 @@
         },
         "DrupalSiteDomain": {
             "Description": "Domain name of the site. e.g. mywebsite.com. You must have the domain name registered",
-            "AllowedPattern":"(?!-)[a-zA-Z0-9-.]*(?<!-)",
-            "ConstraintDescription":"must be a valid fully-qualified domain name.",
+            "AllowedPattern": "(?!-)[a-zA-Z0-9-.]*(?<!-)",
+            "ConstraintDescription": "must be a valid fully-qualified domain name.",
             "Type": "String"
         },
         "WebServerMinSize": {
@@ -320,8 +320,8 @@
             "Description": "The ARN of the SSL certificate to use for CloudFront. (The Certificate must be in N.Virginia)",
             "Type": "String"
         },
-        "CloudFrontPriceClass":{
-            "AllowedValues":[
+        "CloudFrontPriceClass": {
+            "AllowedValues": [
                 "use-all-edge-locations",
                 "use-only-us-canada-europe-asia",
                 "use-only-us-canada-europe"
@@ -331,11 +331,11 @@
             "Type": "String",
             "ConstraintDescription": "Select a valid CloudFront Price Class."
         },
-        "Route53HostedZoneId":{
+        "Route53HostedZoneId": {
             "Description": "Route53 Hosted Zone ID",
             "Type": "AWS::Route53::HostedZone::Id"
         },
-        "EnableElastiCache":{
+        "EnableElastiCache": {
             "Description": "Enable ElastiCache",
             "AllowedValues": [
                 "true",
@@ -344,7 +344,7 @@
             "Default": "true",
             "Type": "String"
         },
-        "ElastiCacheClusterId":{
+        "ElastiCacheClusterId": {
             "Description": "ElastiCache Cluster Id.",
             "Type": "String",
             "Default": ""
@@ -353,56 +353,56 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "AMZNLINUXHVM": "amzn-ami-hvm-2017.09.1.20180307-x86_64-gp2"
+                "AMZNLINUXHVM": "amzn-ami-hvm-2018.03.0.20180412-x86_64-gp2"
             },
             "ap-northeast-1": {
-                "AMZNLINUXHVM": "ami-a77c30c1"
+                "AMZNLINUXHVM": "ami-28ddc154"
             },
             "ap-northeast-2": {
-                "AMZNLINUXHVM": "ami-5e1ab730"
+                "AMZNLINUXHVM": "ami-efaf0181"
             },
             "ap-south-1": {
-                "AMZNLINUXHVM": "ami-7c87d913"
+                "AMZNLINUXHVM": "ami-b46f48db"
             },
             "ap-southeast-1": {
-                "AMZNLINUXHVM": "ami-e2adf99e"
+                "AMZNLINUXHVM": "ami-64260718"
             },
             "ap-southeast-2": {
-                "AMZNLINUXHVM": "ami-43874721"
+                "AMZNLINUXHVM": "ami-60a26a02"
             },
             "ca-central-1": {
-                "AMZNLINUXHVM": "ami-5b55d23f"
+                "AMZNLINUXHVM": "ami-2f39bf4b"
             },
             "eu-central-1": {
-                "AMZNLINUXHVM": "ami-ac442ac3"
+                "AMZNLINUXHVM": "ami-1b316af0"
             },
             "eu-west-1": {
-                "AMZNLINUXHVM": "ami-3bfab942"
+                "AMZNLINUXHVM": "ami-9cbe9be5"
             },
             "eu-west-2": {
-                "AMZNLINUXHVM": "ami-dff017b8"
+                "AMZNLINUXHVM": "ami-c12dcda6"
             },
             "sa-east-1": {
-                "AMZNLINUXHVM": "ami-5339733f"
+                "AMZNLINUXHVM": "ami-f09dcc9c"
             },
             "us-east-1": {
-                "AMZNLINUXHVM": "ami-1853ac65"
+                "AMZNLINUXHVM": "ami-467ca739"
             },
             "us-east-2": {
-                "AMZNLINUXHVM": "ami-25615740"
+                "AMZNLINUXHVM": "ami-976152f2"
             },
             "us-west-1": {
-                "AMZNLINUXHVM": "ami-bf5540df"
+                "AMZNLINUXHVM": "ami-46e1f226"
             },
             "us-west-2": {
-                "AMZNLINUXHVM": "ami-d874e0a0"
+                "AMZNLINUXHVM": "ami-6b8cef13"
             }
         }
     },
-    "Rules":{
-        "CloudFrontSSLCheck":{
-            "RuleCondition":{
-                "Fn::And":[
+    "Rules": {
+        "CloudFrontSSLCheck": {
+            "RuleCondition": {
+                "Fn::And": [
                     {
                         "Fn::Not": [
                             {
@@ -416,7 +416,7 @@
                         ]
                     },
                     {
-                        "Fn::Equals":[
+                        "Fn::Equals": [
                             {
                                 "Ref": "CloudFrontEnable"
                             },
@@ -425,12 +425,12 @@
                     }
                 ]
             },
-            "Assertions":[
+            "Assertions": [
                 {
-                    "Assert":{
-                        "Fn::Not":[
+                    "Assert": {
+                        "Fn::Not": [
                             {
-                                "Fn::Equals":[
+                                "Fn::Equals": [
                                     {
                                         "Ref": "CloudFrontCustomSSLCertificateId"
                                     },
@@ -440,7 +440,7 @@
                         ]
                     },
                     "AssertDescription": "CloudFrontCustomSSLCertificateId must not be empty when CloudFront is enabled and SSL is used for your Drupal Site"
-                }   
+                }
             ]
         }
     },
@@ -473,7 +473,7 @@
                 "true"
             ]
         },
-        "EnableElastiCacheCondition":{
+        "EnableElastiCacheCondition": {
             "Fn::Equals": [
                 {
                     "Ref": "EnableElastiCache"
@@ -538,39 +538,41 @@
                 ]
             }
         },
-        "WebServerInstanceRole":{
-            "Type" : "AWS::IAM::Role",
-            "Properties" : {
-                "Path" : "/",
+        "WebServerInstanceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/",
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
                         {
                             "Effect": "Allow",
                             "Principal": {
-                              "Service": "ec2.amazonaws.com"
+                                "Service": "ec2.amazonaws.com"
                             },
                             "Action": "sts:AssumeRole"
-                          }
+                        }
                     ]
                 }
             }
         },
-        "WebServerInstanceProfile":{
-            "Type" : "AWS::IAM::InstanceProfile",
-            "Properties" : {
-                "Path" : "/",
-                "Roles" : [
-                    {"Ref": "WebServerInstanceRole"}
+        "WebServerInstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "WebServerInstanceRole"
+                    }
                 ]
             }
-        }, 
-        "DescribeElastiCachePolicy":{
-            "Type" : "AWS::IAM::Policy",
+        },
+        "DescribeElastiCachePolicy": {
+            "Type": "AWS::IAM::Policy",
             "Condition": "EnableElastiCacheCondition",
-            "Properties" : {
-                "PolicyName" : "DescirbeElastiCacheClusterPolicy",
-                "PolicyDocument" : {
+            "Properties": {
+                "PolicyName": "DescirbeElastiCacheClusterPolicy",
+                "PolicyDocument": {
                     "Statement": [
                         {
                             "Action": [
@@ -582,11 +584,13 @@
                         }
                     ]
                 },
-                "Roles":[
-                    {"Ref": "WebServerInstanceRole"}
+                "Roles": [
+                    {
+                        "Ref": "WebServerInstanceRole"
+                    }
                 ]
             }
-        },   
+        },
         "DrupalAMIEC2Instance": {
             "Type": "AWS::EC2::Instance",
             "DependsOn": [
@@ -613,14 +617,26 @@
                             },
                             "drupal",
                             {
-                                "Fn::If":[
+                                "Fn::If": [
                                     "EnableElastiCacheCondition",
-                                    {"Fn::Join":["",["memcached-drupal-", {"Ref":"DrupalVersion"}]]},
-                                    {"Ref" : "AWS::NoValue"}
+                                    {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                "memcached-drupal-",
+                                                {
+                                                    "Ref": "DrupalVersion"
+                                                }
+                                            ]
+                                        ]
+                                    },
+                                    {
+                                        "Ref": "AWS::NoValue"
+                                    }
                                 ]
                             }
                         ],
-                        "drupal_cdn_module":[
+                        "drupal_cdn_module": [
                             "download-cdn-module",
                             {
                                 "Fn::Join": [
@@ -926,16 +942,15 @@
                                             "        allow from all\n",
                                             "    </Directory>\n",
                                             {
-                                                "Fn::If":[
+                                                "Fn::If": [
                                                     "UseSSL",
                                                     {
-                                                        "Fn::Join":[
+                                                        "Fn::Join": [
                                                             "",
                                                             [
                                                                 "    RewriteEngine On\n",
                                                                 "    RewriteCond %{HTTP:X-Forwarded-Proto} =http\n",
                                                                 "    RewriteRule .* https://%{HTTP:Host}%{REQUEST_URI} [L,R=permanent]\n"
-
                                                             ]
                                                         ]
                                                     },
@@ -1058,13 +1073,13 @@
                                 "command": "chown -R apache:apache /var/www/drupal/sites/default/files",
                                 "test": "test -e /var/www/drupal/sites/default/files"
                             },
-                            "09_configure_drupal_https":{
+                            "09_configure_drupal_https": {
                                 "cwd": "/var/www/drupal/sites/default",
-                                "command":{
-                                    "Fn::If":[
+                                "command": {
+                                    "Fn::If": [
                                         "UseSSL",
                                         "echo \"\\$_SERVER['HTTPS'] = 'On';\" >> settings.php",
-                                        "" 
+                                        ""
                                     ]
                                 }
                             }
@@ -1083,11 +1098,11 @@
                             }
                         }
                     },
-                    "memcached-drupal-7":{
-                        "files":{
-                            "/tmp/drupalCacheConfig.sh":{
-                                "content":{
-                                    "Fn::Join":[
+                    "memcached-drupal-7": {
+                        "files": {
+                            "/tmp/drupalCacheConfig.sh": {
+                                "content": {
+                                    "Fn::Join": [
                                         "",
                                         [
                                             "#!/bin/bash\n",
@@ -1104,9 +1119,17 @@
                                             "\\$conf['memcache_servers'] = array(\\n\"\n",
                                             "for node in \\\n",
                                             "`aws elasticache describe-cache-clusters --show-cache-node-info \\\n",
-                                            "--cache-cluster-id ", {"Ref": "ElastiCacheClusterId"}, " \\\n",
+                                            "--cache-cluster-id ",
+                                            {
+                                                "Ref": "ElastiCacheClusterId"
+                                            },
+                                            " \\\n",
                                             "--query 'CacheClusters[0].CacheNodes[*].Endpoint.[Address, Port]' \\\n",
-                                            "--output=text --region='",{"Ref": "AWS::Region"},"'\\\n",
+                                            "--output=text --region='",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "'\\\n",
                                             "| sed -E -e 's/[[:space:]]+/:/g'`\n",
                                             "do\n",
                                             "printf \"    '\"$node\"' => 'default',\\n\"\n",
@@ -1123,8 +1146,8 @@
                                 "group": "root"
                             }
                         },
-                        "commands":{
-                            "01_download_memcahe_module":{
+                        "commands": {
+                            "01_download_memcahe_module": {
                                 "cwd": "/var/www/drupal",
                                 "command": "/root/.composer/vendor/bin/drush dl memcache",
                                 "env": {
@@ -1132,11 +1155,11 @@
                                     "DRUSH_PHP": "/usr/bin/php"
                                 }
                             },
-                            "02_append_memcache_settings":{
+                            "02_append_memcache_settings": {
                                 "cwd": "/var/www/drupal/sites/default/",
                                 "command": "/tmp/drupalCacheConfig.sh >> settings.php"
                             },
-                            "03_enable_memcache_modules":{
+                            "03_enable_memcache_modules": {
                                 "cwd": "/var/www/drupal",
                                 "command": "/root/.composer/vendor/bin/drush en -y memcache memcache_admin",
                                 "env": {
@@ -1144,7 +1167,7 @@
                                     "DRUSH_PHP": "/usr/bin/php"
                                 }
                             },
-                            "04_clear_cache":{
+                            "04_clear_cache": {
                                 "cwd": "/var/www/drupal",
                                 "command": "/root/.composer/vendor/bin/drush cc drush",
                                 "env": {
@@ -1154,11 +1177,11 @@
                             }
                         }
                     },
-                    "memcached-drupal-8":{
-                        "files":{
-                            "/tmp/drupalCacheConfig.sh":{
-                                "content":{
-                                    "Fn::Join":[
+                    "memcached-drupal-8": {
+                        "files": {
+                            "/tmp/drupalCacheConfig.sh": {
+                                "content": {
+                                    "Fn::Join": [
                                         "",
                                         [
                                             "#!/bin/bash\n",
@@ -1180,7 +1203,7 @@
                                             "printf \"    '\"$node\"' => 'default',\\n\"\n",
                                             "done\n",
                                             "printf \"];\"\n"
-                                        ]   
+                                        ]
                                     ]
                                 },
                                 "mode": "000500",
@@ -1188,8 +1211,8 @@
                                 "group": "root"
                             }
                         },
-                        "commands":{
-                            "01_enable_memcahe":{
+                        "commands": {
+                            "01_enable_memcahe": {
                                 "cwd": "/var/www/drupal",
                                 "command": "/root/.composer/vendor/bin/drush en -y memcache memcache_storage",
                                 "env": {
@@ -1197,14 +1220,14 @@
                                     "DRUSH_PHP": "/usr/bin/php"
                                 }
                             },
-                            "02_append_memcache_settings":{
+                            "02_append_memcache_settings": {
                                 "cwd": "/var/www/drupal/sites/default/",
                                 "command": "/tmp/drupalCacheConfig.sh >> settings.php"
                             }
                         }
                     },
-                    "download-cdn-module":{
-                        "commands":{
+                    "download-cdn-module": {
+                        "commands": {
                             "01_download_cdn_module": {
                                 "cwd": "/var/www/drupal",
                                 "command": "/root/.composer/vendor/bin/drush dl cdn",
@@ -1215,14 +1238,15 @@
                             }
                         }
                     },
-                    "install-cdn-module-8":{
-                        "commands":{
+                    "install-cdn-module-8": {
+                        "commands": {
                             "01_edit_cdn_settings_file": {
                                 "cwd": "/var/www/drupal/modules/cdn/config/install",
-                                "command": {"Fn::If":[
+                                "command": {
+                                    "Fn::If": [
                                         "DrupalCdnModuleCondition",
                                         {
-                                            "Fn::Join":[
+                                            "Fn::Join": [
                                                 "",
                                                 [
                                                     "sed -i 's/domain: null/domain: ",
@@ -1252,8 +1276,8 @@
                             }
                         }
                     },
-                    "install-cdn-module-7":{
-                        "commands":{
+                    "install-cdn-module-7": {
+                        "commands": {
                             "01_enable_cdn_module": {
                                 "cwd": "/var/www/drupal",
                                 "command": "/root/.composer/vendor/bin/drush en -y cdn",
@@ -1262,13 +1286,13 @@
                                     "DRUSH_PHP": "/usr/bin/php"
                                 }
                             },
-                            "02_configure_cdn_module":{
+                            "02_configure_cdn_module": {
                                 "cwd": "/var/www/drupal",
                                 "command": {
-                                    "Fn::If":[
+                                    "Fn::If": [
                                         "DrupalCdnModuleCondition",
                                         {
-                                            "Fn::Join":[
+                                            "Fn::Join": [
                                                 "",
                                                 [
                                                     "/root/.composer/vendor/bin/drush vset preprocess_js TRUE",
@@ -1286,10 +1310,10 @@
                                                     },
                                                     "|.css .js .jpg .jpeg .png\"",
                                                     {
-                                                        "Fn::If":[
+                                                        "Fn::If": [
                                                             "UseSSL",
                                                             {
-                                                                "Fn::Join":[
+                                                                "Fn::Join": [
                                                                     "",
                                                                     [
                                                                         " && ",
@@ -1303,7 +1327,7 @@
                                                 ]
                                             ]
                                         },
-                                        ""   
+                                        ""
                                     ]
                                 }
                             }
@@ -1340,7 +1364,7 @@
                 "KeyName": {
                     "Ref": "KeyPair"
                 },
-                "IamInstanceProfile":{
+                "IamInstanceProfile": {
                     "Ref": "WebServerInstanceProfile"
                 },
                 "UserData": {
@@ -1366,10 +1390,10 @@
                                 },
                                 "\n",
                                 {
-                                    "Fn::If":[
+                                    "Fn::If": [
                                         "DrupalCdnModuleCondition",
                                         {
-                                            "Fn::Join":[
+                                            "Fn::Join": [
                                                 "",
                                                 [
                                                     "/opt/aws/bin/cfn-init -v ",
@@ -1621,7 +1645,7 @@
         },
         "ALBHTTPSListener": {
             "Type": "AWS::ElasticLoadBalancingV2::Listener",
-            "Condition": "UseSSL", 
+            "Condition": "UseSSL",
             "Properties": {
                 "DefaultActions": [
                     {
@@ -1654,7 +1678,7 @@
             }
         },
         "ALBHTTPListener": {
-            "Type": "AWS::ElasticLoadBalancingV2::Listener", 
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
             "Properties": {
                 "DefaultActions": [
                     {
@@ -1671,50 +1695,67 @@
                 "Protocol": "HTTP"
             }
         },
-        "Route53Stack":{
+        "Route53Stack": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
                 "TemplateURL": {
                     "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/route53.template"
                 },
                 "Parameters": {
-                    "HostedZoneId": {"Ref": "Route53HostedZoneId"},
-                    "DomainName": {"Ref": "DrupalSiteDomain"},
+                    "HostedZoneId": {
+                        "Ref": "Route53HostedZoneId"
+                    },
+                    "DomainName": {
+                        "Ref": "DrupalSiteDomain"
+                    },
                     "ElbDnsName": {
                         "Fn::GetAtt": [
                             "ApplicationLoadBalancer",
                             "DNSName"
                         ]
                     },
-                    "ElbHostedZoneId":{"Fn::GetAtt":["ApplicationLoadBalancer", "CanonicalHostedZoneID"]}
+                    "ElbHostedZoneId": {
+                        "Fn::GetAtt": [
+                            "ApplicationLoadBalancer",
+                            "CanonicalHostedZoneID"
+                        ]
+                    }
                 }
             }
         },
-        "CloudFrontStack":{
+        "CloudFrontStack": {
             "Type": "AWS::CloudFormation::Stack",
             "Condition": "DrupalCdnModuleCondition",
-            "DependsOn":["Route53Stack"],
+            "DependsOn": [
+                "Route53Stack"
+            ],
             "Properties": {
                 "TemplateURL": {
                     "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/cloudfront.template"
                 },
                 "Parameters": {
-                    "OriginDnsName":{"Ref": "DrupalSiteDomain"},
-                    "OriginAccessProtocol":{
+                    "OriginDnsName": {
+                        "Ref": "DrupalSiteDomain"
+                    },
+                    "OriginAccessProtocol": {
                         "Fn::If": [
                             "UseSSL",
                             "https-only",
                             "http-only"
                         ]
                     },
-                    "CustomSSLCertificateId":{
-                        "Fn::If":[
+                    "CustomSSLCertificateId": {
+                        "Fn::If": [
                             "UseSSL",
-                            {"Ref":"CloudFrontCustomSSLCertificateId"},
+                            {
+                                "Ref": "CloudFrontCustomSSLCertificateId"
+                            },
                             ""
                         ]
                     },
-                    "CloudFrontPriceClass":{"Ref": "CloudFrontPriceClass"}
+                    "CloudFrontPriceClass": {
+                        "Ref": "CloudFrontPriceClass"
+                    }
                 }
             }
         }
