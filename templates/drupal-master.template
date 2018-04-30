@@ -220,7 +220,7 @@
                     "default": "CloudFront Custom SSL certificate ARN"
                 },
                 "CloudFrontPriceClass":{
-                    "dfault": "CloudFront PriceClass"
+                    "default": "CloudFront PriceClass"
                 },
                 "Route53HostedZoneId":{
                     "default": "Route53 Hosted Zone ID"
@@ -907,7 +907,7 @@
                     "Route53HostedZoneId":{
                         "Ref": "Route53HostedZoneId"
                     },
-                    "EnableElastiCache": {
+                    "ElastiCacheEnable": {
                         "Ref": "ElastiCacheEnable"
                     },
                     "ElastiCacheAutoMinorVersionUpgrade":{
