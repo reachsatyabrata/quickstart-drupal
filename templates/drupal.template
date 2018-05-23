@@ -24,7 +24,8 @@
                     },
                     "Parameters":[
                         "Route53HostedZoneId",
-                        "DrupalSiteDomain"
+                        "DrupalSiteDomain",
+                        "CloudFrontAlias"
                     ]
                 },
                 {
@@ -87,7 +88,6 @@
                     },
                     "Parameters": [
                         "CloudFrontEnable",
-                        "CloudFrontCustomSSLCertificateId",
                         "CloudFrontPriceClass"
                     ]
                 },
@@ -201,11 +201,11 @@
                 "CloudFrontEnable":{
                     "default": "Enable CloudFront"
                 },
-                "CloudFrontCustomSSLCertificateId":{
-                    "default": "CloudFront Custom SSL certificate ARN"
-                },
                 "CloudFrontPriceClass":{
                     "default": "CloudFront PriceClass"
+                },
+                "CloudFrontAlias":{
+                    "default": "CloudFront Alias"
                 },
                 "Route53HostedZoneId":{
                     "default": "Route53 Hosted Zone ID"
@@ -343,10 +343,11 @@
             "Type": "String"
         },
         "DrupalSiteDomain": {
-            "Description": "Domain name of the site. e.g. mywebsite.com. You must have the domain name registered",
-            "AllowedPattern":"(?!-)[a-zA-Z0-9-.]*(?<!-)",
-            "ConstraintDescription":"must be a valid fully-qualified domain name.",
-            "Type": "String"
+            "Description": "Domain name of the site. e.g. example.com. Valid FQDN required when using SSL. Leave the default localhost.local for test environments.",
+            "AllowedPattern": "(?!-)[a-zA-Z0-9-.]*(?<!-)",
+            "ConstraintDescription": "Must be a valid fully-qualified domain name.",
+            "Type": "String", 
+            "Default": "localhost.local"
         },
         "DrupalSiteName": {
             "AllowedPattern": "[a-zA-Z][a-zA-Z0-9 ]*",
@@ -493,11 +494,6 @@
             "Description": "Enable CloudFront Content Delivery Network",
             "Type": "String"
         },
-        "CloudFrontCustomSSLCertificateId": {
-            "Default": "",
-            "Description": "The ARN of the SSL certificate to use for CloudFront. (The Certificate must be in ACM in N.Virginia)",
-            "Type": "String"
-        },
         "CloudFrontPriceClass":{
             "AllowedValues":[
                 "use-all-edge-locations",
@@ -509,9 +505,17 @@
             "Type": "String",
             "ConstraintDescription": "Select a valid CloudFront Price Class."
         },
-        "Route53HostedZoneId":{
-            "Description": "Route53 Hosted Zone ID.",
-            "Type": "AWS::Route53::HostedZone::Id"
+        "CloudFrontAlias":{
+            "Description": "Alias for the CloudFront distribution. E.g. cdn.example.com. Mandatory when using HTTPS/SSL and optional when using http.",
+            "Type": "String",
+            "Default": "cdn.default",
+            "AllowedPattern": "(?!-)[a-zA-Z0-9-.]*(?<!-)",
+            "ConstraintDescription": "Must be a valid fully-qualified domain name."
+        },
+        "Route53HostedZoneId": {
+            "Description": "Route53 Hosted Zone ID",
+            "Type": "String",
+            "Default": ""
         },
         "ElastiCacheEnable": {
             "AllowedValues": [
@@ -593,78 +597,21 @@
                 }
             ]
         },
-        "SSLCheckLocalhost":{
-            "RuleCondition":{
-                "Fn::Not": [
-                    {
-                        "Fn::Equals": [
-                            {
-                                "Ref": "SSLCertificateId"
-                            },
-                            ""
-                        ]
-                    }
-                ]
-            },
+        "SslAndRoute53Rule":{
+            "RuleCondition": 
+            {"Fn::Or":[
+                {"Fn::Not": [{"Fn::Equals":[{"Ref": "SSLCertificateId"}, ""]}]},
+                {"Fn::Not": [{"Fn::Equals":[{"Ref": "Route53HostedZoneId"}, ""]}]}
+            ]},
             "Assertions":[
                 {
-                    "Assert": {
-                        "Fn::Not": [
-                            {
-                                "Fn::Equals": [
-                                    {
-                                        "Ref": "DrupalSiteDomain"
-                                    },
-                                    "localhost"
-                                ]
-                            }
-                        ]
-                    },
-                    "AssertDescription": "DrupalSiteDomain cannot be \"localhost\" when using HTTPS for your Drupal Site"
+                    "Assert": {"Fn::Not":[{"Fn::Equals":[{"Ref": "DrupalSiteDomain"}, "localhost.local"]}]},
+                    "AssertDescription": "Parameter DrupalSiteDomain cannot be the default value 'localhost.local' and must provide FQDN e.g. example.com, when SSLCertificateId or Route53HostedZoneIdis values are provided."
+                },
+                {
+                    "Assert": {"Fn::Not":[{"Fn::Equals":[{"Ref": "CloudFrontAlias"}, "cdn.default"]}]},
+                    "AssertDescription": "Parameter CloudFrontAlias cannot be the default value 'cdn.default' and must provide FQDN e.g. cdn.example.com, when SSLCertificateId or Route53HostedZoneIdis values are provided."
                 }
-            ]
-        },
-        "CloudFrontSSLCheck":{
-            "RuleCondition":{
-                "Fn::And":[
-                    {
-                        "Fn::Not": [
-                            {
-                                "Fn::Equals": [
-                                    {
-                                        "Ref": "SSLCertificateId"
-                                    },
-                                    ""
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "Fn::Equals":[
-                            {
-                                "Ref": "CloudFrontEnable"
-                            },
-                            "true"
-                        ]
-                    }
-                ]
-            },
-            "Assertions":[
-                {
-                    "Assert":{
-                        "Fn::Not":[
-                            {
-                                "Fn::Equals":[
-                                    {
-                                        "Ref": "CloudFrontCustomSSLCertificateId"
-                                    },
-                                    ""
-                                ]
-                            }
-                        ]
-                    },
-                    "AssertDescription": "CloudFrontCustomSSLCertificateId must not be empty when CloudFront is enabled and SSL is used for your Drupal Site"
-                }   
             ]
         }
     },
@@ -903,8 +850,8 @@
                     "CloudFrontEnable":{
                         "Ref": "CloudFrontEnable"
                     },
-                    "CloudFrontCustomSSLCertificateId":{
-                        "Ref": "CloudFrontCustomSSLCertificateId"
+                    "CloudFrontAlias":{
+                        "Ref": "CloudFrontAlias"
                     },
                     "CloudFrontPriceClass":{
                         "Ref": "CloudFrontPriceClass"

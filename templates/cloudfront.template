@@ -16,7 +16,9 @@
         "CloudFrontAlias":{
             "Description": "Alias for the CloudFront distribution. E.g. cdn.mysite.com",
             "Type": "List<String>",
-            "Default": ""
+            "Default": "cdn.default",
+            "AllowedPattern": "(?!-)[a-zA-Z0-9-.]*(?<!-)",
+            "ConstraintDescription": "Must be a valid fully-qualified domain name."
         },
         "CustomSSLCertificateId":{
             "Default": "",
@@ -50,21 +52,7 @@
     },
     "Conditions":{
         "DistributionHasAliases": {
-            "Fn::Not": [
-                {
-                    "Fn::Equals": [
-                        {
-                            "Fn::Join":[
-                                "",
-                                {
-                                    "Ref": "CloudFrontAlias"
-                                }
-                            ]
-                        },
-                        ""
-                    ]
-                }
-            ]
+            "Fn::Not": [{"Fn::Equals": [{"Fn::Select":[0, {"Ref": "CloudFrontAlias"}]}, "cdn.default"]}]
         },
         "DistributionHasSSL": {
             "Fn::Not": [

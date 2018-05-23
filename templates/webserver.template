@@ -64,7 +64,6 @@
                     },
                     "Parameters": [
                         "CloudFrontEnable",
-                        "CloudFrontCustomSSLCertificateId",
                         "CloudFrontPriceClass"
                     ]
                 },
@@ -265,10 +264,11 @@
             "NoEcho": "true"
         },
         "DrupalSiteDomain": {
-            "Description": "Domain name of the site. e.g. mywebsite.com. You must have the domain name registered",
+            "Description": "Domain name of the site. e.g. example.com. Valid FQDN required when using SSL. Leave the default localhost.local for test environments.",
             "AllowedPattern": "(?!-)[a-zA-Z0-9-.]*(?<!-)",
-            "ConstraintDescription": "must be a valid fully-qualified domain name.",
-            "Type": "String"
+            "ConstraintDescription": "Must be a valid fully-qualified domain name.",
+            "Type": "String", 
+            "Default": "localhost.local"
         },
         "WebServerMinSize": {
             "Default": "1",
@@ -315,11 +315,6 @@
             "Description": "Enable CloudFront Content Delivery Network",
             "Type": "String"
         },
-        "CloudFrontCustomSSLCertificateId": {
-            "Default": "",
-            "Description": "The ARN of the SSL certificate to use for CloudFront. (The Certificate must be in N.Virginia)",
-            "Type": "String"
-        },
         "CloudFrontPriceClass": {
             "AllowedValues": [
                 "use-all-edge-locations",
@@ -331,9 +326,17 @@
             "Type": "String",
             "ConstraintDescription": "Select a valid CloudFront Price Class."
         },
+        "CloudFrontAlias":{
+            "Description": "Alias for the CloudFront distribution. E.g. cdn.example.com. Mandatory when using HTTPS/SSL and optional when using http.",
+            "Type": "String",
+            "Default": "cdn.default",
+            "AllowedPattern": "(?!-)[a-zA-Z0-9-.]*(?<!-)",
+            "ConstraintDescription": "Must be a valid fully-qualified domain name."
+        },
         "Route53HostedZoneId": {
             "Description": "Route53 Hosted Zone ID",
-            "Type": "AWS::Route53::HostedZone::Id"
+            "Type": "String",
+            "Default": ""
         },
         "EnableElastiCache": {
             "Description": "Enable ElastiCache",
@@ -400,46 +403,29 @@
         }
     },
     "Rules": {
-        "CloudFrontSSLCheck": {
-            "RuleCondition": {
-                "Fn::And": [
-                    {
-                        "Fn::Not": [
-                            {
-                                "Fn::Equals": [
-                                    {
-                                        "Ref": "SSLCertificateId"
-                                    },
-                                    ""
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "Fn::Equals": [
-                            {
-                                "Ref": "CloudFrontEnable"
-                            },
-                            "true"
-                        ]
-                    }
-                ]
-            },
-            "Assertions": [
+        "SslAndRoute53Rule":{
+            "RuleCondition": 
+            {"Fn::Or":[
+                {"Fn::Not": [{"Fn::Equals":[{"Ref": "SSLCertificateId"}, ""]}]},
+                {"Fn::Not": [{"Fn::Equals":[{"Ref": "Route53HostedZoneId"}, ""]}]}
+            ]},
+            "Assertions":[
                 {
-                    "Assert": {
-                        "Fn::Not": [
-                            {
-                                "Fn::Equals": [
-                                    {
-                                        "Ref": "CloudFrontCustomSSLCertificateId"
-                                    },
-                                    ""
-                                ]
-                            }
-                        ]
-                    },
-                    "AssertDescription": "CloudFrontCustomSSLCertificateId must not be empty when CloudFront is enabled and SSL is used for your Drupal Site"
+                    "Assert": {"Fn::Not":[{"Fn::Equals":[{"Ref": "DrupalSiteDomain"}, "localhost.local"]}]},
+                    "AssertDescription": "Parameter DrupalSiteDomain cannot be the default value 'localhost.local' and must provide FQDN e.g. example.com, when SSLCertificateId or Route53HostedZoneIdis values are provided."
+                },
+                {
+                    "Assert": {"Fn::Not":[{"Fn::Equals":[{"Ref": "CloudFrontAlias"}, "cdn.default"]}]},
+                    "AssertDescription": "Parameter CloudFrontAlias cannot be the default value 'cdn.default' and must provide FQDN e.g. cdn.example.com, when SSLCertificateId or Route53HostedZoneIdis values are provided."
+                }
+            ]
+        },
+        "ElastiCacheRule":{
+            "RuleCondition": {"Fn::Equals":[{"Ref": "EnableElastiCache"}, "true"]},
+            "Assertions":[
+                {
+                    "Assert": {"Fn::Not":[{"Fn::Equals":[{"Ref": "ElastiCacheClusterId"}, ""]}]},
+                    "AssertDescription": "ElastiCacheClusterId cannot be empty when EnableElastiCache is true."
                 }
             ]
         }
@@ -479,6 +465,19 @@
                     "Ref": "EnableElastiCache"
                 },
                 "true"
+            ]
+        },
+        "DrupalSiteDomainRoute53Condition":{
+            "Fn::And":[
+                {"Fn::Not":[{"Fn::Equals":[{"Ref": "DrupalSiteDomain"}, "localhost.local"]}]},
+                {"Fn::Not":[{"Fn::Equals":[{"Ref": "Route53HostedZoneId"}, ""]}]}
+            ]
+        },
+        "CloudFrontAliasRoute53Condition":{
+            "Fn::And":[
+                {"Fn::Not":[{"Fn::Equals":[{"Ref": "CloudFrontAlias"}, "cdn.default"]}]},
+                {"Fn::Not":[{"Fn::Equals":[{"Ref": "Route53HostedZoneId"}, ""]}]},
+                {"Fn::Equals":[{"Ref": "CloudFrontEnable"}, "true"]}
             ]
         }
     },
@@ -1082,6 +1081,15 @@
                                         ""
                                     ]
                                 }
+                            },
+                            "10_set_drupal_folder_owner":{
+                                "command": "chown -R ec2-user:apache /var/www/drupal"
+                            },
+                            "11_set_drupal_folder_permissions":{
+                                "command": "chmod -R 750 /var/www/drupal"
+                            },
+                            "12_set_drupal_filesFolder_permissions":{
+                                "command": "chmod -R 770 /var/www/drupal/sites/default/files"
                             }
                         },
                         "services": {
@@ -1239,6 +1247,7 @@
                         }
                     },
                     "install-cdn-module-8": {
+
                         "commands": {
                             "01_edit_cdn_settings_file": {
                                 "cwd": "/var/www/drupal/modules/cdn/config/install",
@@ -1249,16 +1258,16 @@
                                             "Fn::Join": [
                                                 "",
                                                 [
-                                                    "sed -i 's/domain: null/domain: ",
-                                                    {
-                                                        "Fn::GetAtt": [
-                                                            "CloudFrontStack",
-                                                            "Outputs.CdnUrl"
-                                                        ]
-                                                    },
-                                                    "/g' cdn.settings.yml",
+                                                    "mv cdn.settings.yml cdn.settings.yml.org",
                                                     " && ",
-                                                    "sed -i 's/status: false/status: true/g' cdn.settings.yml"
+                                                    "printf \"langcode: en\nstatus: true\nmapping:\n  type: simple\n  domain: ",
+                                                    {
+                                                        "Fn::If":[
+                                                            "CloudFrontAliasRoute53Condition", 
+                                                            {"Ref": "CloudFrontAlias"}, 
+                                                            {"Fn::GetAtt": ["CloudFrontStack","Outputs.CdnUrl"]}]
+                                                    },
+                                                    "\n  conditions: []\n\" > cdn.settings.yml"
                                                 ]
                                             ]
                                         },
@@ -1301,14 +1310,13 @@
                                                     " && ",
                                                     "/root/.composer/vendor/bin/drush vset cdn_status '2'",
                                                     " && ",
-                                                    "/root/.composer/vendor/bin/drush vset cdn_basic_mapping \"//",
+                                                    "/root/.composer/vendor/bin/drush vset cdn_basic_mapping \"http://",
                                                     {
-                                                        "Fn::GetAtt": [
-                                                            "CloudFrontStack",
-                                                            "Outputs.CdnUrl"
-                                                        ]
-                                                    },
-                                                    "|.css .js .jpg .jpeg .png\"",
+                                                        "Fn::If":[
+                                                            "CloudFrontAliasRoute53Condition", 
+                                                            {"Ref": "CloudFrontAlias"}, 
+                                                            {"Fn::GetAtt": ["CloudFrontStack","Outputs.CdnUrl"]}]
+                                                    }, "\"",
                                                     {
                                                         "Fn::If": [
                                                             "UseSSL",
@@ -1448,7 +1456,7 @@
             "CreationPolicy": {
                 "ResourceSignal": {
                     "Count": "1",
-                    "Timeout": "PT20M"
+                    "Timeout": "PT25M"
                 }
             }
         },
@@ -1695,47 +1703,35 @@
                 "Protocol": "HTTP"
             }
         },
-        "Route53Stack": {
-            "Type": "AWS::CloudFormation::Stack",
-            "Properties": {
-                "TemplateURL": {
-                    "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/route53.template"
-                },
-                "Parameters": {
-                    "HostedZoneId": {
-                        "Ref": "Route53HostedZoneId"
-                    },
-                    "DomainName": {
-                        "Ref": "DrupalSiteDomain"
-                    },
-                    "ElbDnsName": {
-                        "Fn::GetAtt": [
-                            "ApplicationLoadBalancer",
-                            "DNSName"
-                        ]
-                    },
-                    "ElbHostedZoneId": {
-                        "Fn::GetAtt": [
-                            "ApplicationLoadBalancer",
-                            "CanonicalHostedZoneID"
-                        ]
-                    }
+        "DrupalSiteDomainRoute53Record":{
+            "Type": "AWS::Route53::RecordSet",
+            "Condition": "DrupalSiteDomainRoute53Condition",
+            "Properties":{
+                "Name": {"Ref": "DrupalSiteDomain"},
+                "Type": "A",
+                "HostedZoneId": {"Ref": "Route53HostedZoneId"},
+                "AliasTarget":{
+                    "DNSName": {"Fn::GetAtt": ["ApplicationLoadBalancer", "DNSName"]},
+                    "EvaluateTargetHealth": "True",
+                    "HostedZoneId": {"Fn::GetAtt": ["ApplicationLoadBalancer", "CanonicalHostedZoneID"]}
                 }
             }
         },
         "CloudFrontStack": {
             "Type": "AWS::CloudFormation::Stack",
             "Condition": "DrupalCdnModuleCondition",
-            "DependsOn": [
-                "Route53Stack"
-            ],
             "Properties": {
                 "TemplateURL": {
                     "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/cloudfront.template"
                 },
                 "Parameters": {
                     "OriginDnsName": {
-                        "Ref": "DrupalSiteDomain"
+                        "Fn::If": [
+                            "DrupalSiteDomainRoute53Condition", 
+                            {"Ref": "DrupalSiteDomain"},
+                            {"Fn::GetAtt": ["ApplicationLoadBalancer", "DNSName"]}
+                        ]
+                        
                     },
                     "OriginAccessProtocol": {
                         "Fn::If": [
@@ -1744,11 +1740,12 @@
                             "http-only"
                         ]
                     },
+                    "CloudFrontAlias": {"Fn::Join":[",",[{"Ref": "CloudFrontAlias"}]]},
                     "CustomSSLCertificateId": {
                         "Fn::If": [
                             "UseSSL",
                             {
-                                "Ref": "CloudFrontCustomSSLCertificateId"
+                                "Ref": "SSLCertificateId"
                             },
                             ""
                         ]
@@ -1756,6 +1753,19 @@
                     "CloudFrontPriceClass": {
                         "Ref": "CloudFrontPriceClass"
                     }
+                }
+            }
+        },
+        "CloudFrontAliasRoute53Record":{
+            "Type": "AWS::Route53::RecordSet",
+            "Condition": "CloudFrontAliasRoute53Condition",
+            "Properties":{
+                "Name": {"Ref": "CloudFrontAlias"},
+                "Type": "A",
+                "HostedZoneId": {"Ref": "Route53HostedZoneId"},
+                "AliasTarget":{
+                    "DNSName": {"Fn::GetAtt": ["CloudFrontStack", "Outputs.CdnUrl"]},
+                    "HostedZoneId": "Z2FDTNDATAQYW2"
                 }
             }
         }

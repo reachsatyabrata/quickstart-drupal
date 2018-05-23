@@ -65,7 +65,7 @@
     },
     {
         "ParameterKey": "DrupalSiteDomain",
-        "ParameterValue": "localhost"
+        "ParameterValue": "localhost.local"
     },
     {
         "ParameterKey": "DrupalSiteName",
@@ -83,7 +83,7 @@
         "ParameterKey": "PhpVersion",
         "ParameterValue": "php71"
     },
-    {
+   {
         "ParameterKey": "RemoteAccessCIDR",
         "ParameterValue": "10.0.0.0/16"
     },
@@ -109,6 +109,38 @@
     },
     {
         "ParameterKey": "WebServerMinSize",
+        "ParameterValue": "1"
+    },
+   {
+        "ParameterKey": "CloudFrontEnable",
+        "ParameterValue": "true"
+    },
+   {
+        "ParameterKey": "CloudFrontPriceClass",
+        "ParameterValue": "use-all-edge-locations"
+    },
+   {
+        "ParameterKey": "CloudFrontAlias",
+        "ParameterValue": "cdn.default"
+    },
+   {
+        "ParameterKey": "Route53HostedZoneId",
+        "ParameterValue": ""
+    },
+   {
+        "ParameterKey": "ElastiCacheEnable",
+        "ParameterValue": "true"
+    },
+   {
+        "ParameterKey": "ElastiCacheAutoMinorVersionUpgrade",
+        "ParameterValue": "true"
+    },
+   {
+        "ParameterKey": "ElastiCacheNodeType",
+        "ParameterValue": "cache.t2.micro"
+    },
+   {
+        "ParameterKey": "ElastiCacheNumberOfNodes",
         "ParameterValue": "2"
     }
 ]
