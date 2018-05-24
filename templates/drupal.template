@@ -863,9 +863,10 @@
                         "Ref": "ElastiCacheEnable"
                     },
                     "ElastiCacheClusterId":{
-                        "Fn::GetAtt": [
-                            "ElastiCacheStack",
-                            "Outputs.ElastiCacheClusterId"
+                        "Fn::If":[
+                            "ElastiCacheEnableCondition",
+                            {"Fn::GetAtt": ["ElastiCacheStack", "Outputs.ElastiCacheClusterId"]},
+                            ""
                         ]
                     }
                 }
