@@ -267,7 +267,7 @@
             "Description": "Domain name of the site. e.g. example.com. Valid FQDN required when using SSL. Leave the default localhost.local for test environments.",
             "AllowedPattern": "(?!-)[a-zA-Z0-9-.]*(?<!-)",
             "ConstraintDescription": "Must be a valid fully-qualified domain name.",
-            "Type": "String", 
+            "Type": "String",
             "Default": "localhost.local"
         },
         "WebServerMinSize": {
@@ -326,7 +326,7 @@
             "Type": "String",
             "ConstraintDescription": "Select a valid CloudFront Price Class."
         },
-        "CloudFrontAlias":{
+        "CloudFrontAlias": {
             "Description": "Alias for the CloudFront distribution. E.g. cdn.example.com. Mandatory when using HTTPS/SSL and optional when using http.",
             "Type": "String",
             "Default": "cdn.default",
@@ -356,75 +356,138 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "AMZNLINUXHVM": "amzn-ami-hvm-2018.03.0.20180508-x86_64-gp2"
+                "AMZNLINUXHVM": "amzn-ami-hvm-2018.03.0.20180622-x86_64-gp2"
             },
             "ap-northeast-1": {
-                "AMZNLINUXHVM": "ami-92df37ed"
+                "AMZNLINUXHVM": "ami-9c9443e3"
             },
             "ap-northeast-2": {
-                "AMZNLINUXHVM": "ami-c10fa6af"
+                "AMZNLINUXHVM": "ami-ebc47185"
             },
             "ap-south-1": {
-                "AMZNLINUXHVM": "ami-76d6f519"
+                "AMZNLINUXHVM": "ami-5a8da735"
             },
             "ap-southeast-1": {
-                "AMZNLINUXHVM": "ami-de90a5a2"
+                "AMZNLINUXHVM": "ami-ed838091"
             },
             "ap-southeast-2": {
-                "AMZNLINUXHVM": "ami-423bec20"
+                "AMZNLINUXHVM": "ami-33f92051"
             },
             "ca-central-1": {
-                "AMZNLINUXHVM": "ami-338a0a57"
+                "AMZNLINUXHVM": "ami-03e86a67"
             },
             "eu-central-1": {
-                "AMZNLINUXHVM": "ami-9a91b371"
+                "AMZNLINUXHVM": "ami-a058674b"
             },
             "eu-west-1": {
-                "AMZNLINUXHVM": "ami-ca0135b3"
+                "AMZNLINUXHVM": "ami-e4515e0e"
             },
             "eu-west-2": {
-                "AMZNLINUXHVM": "ami-a36f8dc4"
+                "AMZNLINUXHVM": "ami-b2b55cd5"
             },
             "sa-east-1": {
-                "AMZNLINUXHVM": "ami-3885d854"
+                "AMZNLINUXHVM": "ami-83d58fef"
             },
             "us-east-1": {
-                "AMZNLINUXHVM": "ami-14c5486b"
+                "AMZNLINUXHVM": "ami-cfe4b2b0"
             },
             "us-east-2": {
-                "AMZNLINUXHVM": "ami-922914f7"
+                "AMZNLINUXHVM": "ami-40142d25"
             },
             "us-west-1": {
-                "AMZNLINUXHVM": "ami-25110f45"
+                "AMZNLINUXHVM": "ami-0e86606d"
             },
             "us-west-2": {
-                "AMZNLINUXHVM": "ami-e251209a"
+                "AMZNLINUXHVM": "ami-0ad99772"
             }
         }
     },
     "Rules": {
-        "SslAndRoute53Rule":{
-            "RuleCondition": 
-            {"Fn::Or":[
-                {"Fn::Not": [{"Fn::Equals":[{"Ref": "SSLCertificateId"}, ""]}]},
-                {"Fn::Not": [{"Fn::Equals":[{"Ref": "Route53HostedZoneId"}, ""]}]}
-            ]},
-            "Assertions":[
+        "SslAndRoute53Rule": {
+            "RuleCondition": {
+                "Fn::Or": [
+                    {
+                        "Fn::Not": [
+                            {
+                                "Fn::Equals": [
+                                    {
+                                        "Ref": "SSLCertificateId"
+                                    },
+                                    ""
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Fn::Not": [
+                            {
+                                "Fn::Equals": [
+                                    {
+                                        "Ref": "Route53HostedZoneId"
+                                    },
+                                    ""
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "Assertions": [
                 {
-                    "Assert": {"Fn::Not":[{"Fn::Equals":[{"Ref": "DrupalSiteDomain"}, "localhost.local"]}]},
+                    "Assert": {
+                        "Fn::Not": [
+                            {
+                                "Fn::Equals": [
+                                    {
+                                        "Ref": "DrupalSiteDomain"
+                                    },
+                                    "localhost.local"
+                                ]
+                            }
+                        ]
+                    },
                     "AssertDescription": "Parameter DrupalSiteDomain cannot be the default value 'localhost.local' and must provide FQDN e.g. example.com, when SSLCertificateId or Route53HostedZoneIdis values are provided."
                 },
                 {
-                    "Assert": {"Fn::Not":[{"Fn::Equals":[{"Ref": "CloudFrontAlias"}, "cdn.default"]}]},
+                    "Assert": {
+                        "Fn::Not": [
+                            {
+                                "Fn::Equals": [
+                                    {
+                                        "Ref": "CloudFrontAlias"
+                                    },
+                                    "cdn.default"
+                                ]
+                            }
+                        ]
+                    },
                     "AssertDescription": "Parameter CloudFrontAlias cannot be the default value 'cdn.default' and must provide FQDN e.g. cdn.example.com, when SSLCertificateId or Route53HostedZoneIdis values are provided."
                 }
             ]
         },
-        "ElastiCacheRule":{
-            "RuleCondition": {"Fn::Equals":[{"Ref": "EnableElastiCache"}, "true"]},
-            "Assertions":[
+        "ElastiCacheRule": {
+            "RuleCondition": {
+                "Fn::Equals": [
+                    {
+                        "Ref": "EnableElastiCache"
+                    },
+                    "true"
+                ]
+            },
+            "Assertions": [
                 {
-                    "Assert": {"Fn::Not":[{"Fn::Equals":[{"Ref": "ElastiCacheClusterId"}, ""]}]},
+                    "Assert": {
+                        "Fn::Not": [
+                            {
+                                "Fn::Equals": [
+                                    {
+                                        "Ref": "ElastiCacheClusterId"
+                                    },
+                                    ""
+                                ]
+                            }
+                        ]
+                    },
                     "AssertDescription": "ElastiCacheClusterId cannot be empty when EnableElastiCache is true."
                 }
             ]
@@ -467,17 +530,68 @@
                 "true"
             ]
         },
-        "DrupalSiteDomainRoute53Condition":{
-            "Fn::And":[
-                {"Fn::Not":[{"Fn::Equals":[{"Ref": "DrupalSiteDomain"}, "localhost.local"]}]},
-                {"Fn::Not":[{"Fn::Equals":[{"Ref": "Route53HostedZoneId"}, ""]}]}
+        "DrupalSiteDomainRoute53Condition": {
+            "Fn::And": [
+                {
+                    "Fn::Not": [
+                        {
+                            "Fn::Equals": [
+                                {
+                                    "Ref": "DrupalSiteDomain"
+                                },
+                                "localhost.local"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Fn::Not": [
+                        {
+                            "Fn::Equals": [
+                                {
+                                    "Ref": "Route53HostedZoneId"
+                                },
+                                ""
+                            ]
+                        }
+                    ]
+                }
             ]
         },
-        "CloudFrontAliasRoute53Condition":{
-            "Fn::And":[
-                {"Fn::Not":[{"Fn::Equals":[{"Ref": "CloudFrontAlias"}, "cdn.default"]}]},
-                {"Fn::Not":[{"Fn::Equals":[{"Ref": "Route53HostedZoneId"}, ""]}]},
-                {"Fn::Equals":[{"Ref": "CloudFrontEnable"}, "true"]}
+        "CloudFrontAliasRoute53Condition": {
+            "Fn::And": [
+                {
+                    "Fn::Not": [
+                        {
+                            "Fn::Equals": [
+                                {
+                                    "Ref": "CloudFrontAlias"
+                                },
+                                "cdn.default"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Fn::Not": [
+                        {
+                            "Fn::Equals": [
+                                {
+                                    "Ref": "Route53HostedZoneId"
+                                },
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "CloudFrontEnable"
+                        },
+                        "true"
+                    ]
+                }
             ]
         }
     },
@@ -1082,13 +1196,13 @@
                                     ]
                                 }
                             },
-                            "10_set_drupal_folder_owner":{
+                            "10_set_drupal_folder_owner": {
                                 "command": "chown -R ec2-user:apache /var/www/drupal"
                             },
-                            "11_set_drupal_folder_permissions":{
+                            "11_set_drupal_folder_permissions": {
                                 "command": "chmod -R 750 /var/www/drupal"
                             },
-                            "12_set_drupal_filesFolder_permissions":{
+                            "12_set_drupal_filesFolder_permissions": {
                                 "command": "chmod -R 770 /var/www/drupal/sites/default/files"
                             }
                         },
@@ -1247,7 +1361,6 @@
                         }
                     },
                     "install-cdn-module-8": {
-
                         "commands": {
                             "01_edit_cdn_settings_file": {
                                 "cwd": "/var/www/drupal/modules/cdn/config/install",
@@ -1262,10 +1375,18 @@
                                                     " && ",
                                                     "printf \"langcode: en\nstatus: true\nmapping:\n  type: simple\n  domain: ",
                                                     {
-                                                        "Fn::If":[
-                                                            "CloudFrontAliasRoute53Condition", 
-                                                            {"Ref": "CloudFrontAlias"}, 
-                                                            {"Fn::GetAtt": ["CloudFrontStack","Outputs.CdnUrl"]}]
+                                                        "Fn::If": [
+                                                            "CloudFrontAliasRoute53Condition",
+                                                            {
+                                                                "Ref": "CloudFrontAlias"
+                                                            },
+                                                            {
+                                                                "Fn::GetAtt": [
+                                                                    "CloudFrontStack",
+                                                                    "Outputs.CdnUrl"
+                                                                ]
+                                                            }
+                                                        ]
                                                     },
                                                     "\n  conditions: []\n\" > cdn.settings.yml"
                                                 ]
@@ -1312,11 +1433,20 @@
                                                     " && ",
                                                     "/root/.composer/vendor/bin/drush vset cdn_basic_mapping \"http://",
                                                     {
-                                                        "Fn::If":[
-                                                            "CloudFrontAliasRoute53Condition", 
-                                                            {"Ref": "CloudFrontAlias"}, 
-                                                            {"Fn::GetAtt": ["CloudFrontStack","Outputs.CdnUrl"]}]
-                                                    }, "\"",
+                                                        "Fn::If": [
+                                                            "CloudFrontAliasRoute53Condition",
+                                                            {
+                                                                "Ref": "CloudFrontAlias"
+                                                            },
+                                                            {
+                                                                "Fn::GetAtt": [
+                                                                    "CloudFrontStack",
+                                                                    "Outputs.CdnUrl"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "\"",
                                                     {
                                                         "Fn::If": [
                                                             "UseSSL",
@@ -1703,17 +1833,31 @@
                 "Protocol": "HTTP"
             }
         },
-        "DrupalSiteDomainRoute53Record":{
+        "DrupalSiteDomainRoute53Record": {
             "Type": "AWS::Route53::RecordSet",
             "Condition": "DrupalSiteDomainRoute53Condition",
-            "Properties":{
-                "Name": {"Ref": "DrupalSiteDomain"},
+            "Properties": {
+                "Name": {
+                    "Ref": "DrupalSiteDomain"
+                },
                 "Type": "A",
-                "HostedZoneId": {"Ref": "Route53HostedZoneId"},
-                "AliasTarget":{
-                    "DNSName": {"Fn::GetAtt": ["ApplicationLoadBalancer", "DNSName"]},
+                "HostedZoneId": {
+                    "Ref": "Route53HostedZoneId"
+                },
+                "AliasTarget": {
+                    "DNSName": {
+                        "Fn::GetAtt": [
+                            "ApplicationLoadBalancer",
+                            "DNSName"
+                        ]
+                    },
                     "EvaluateTargetHealth": "True",
-                    "HostedZoneId": {"Fn::GetAtt": ["ApplicationLoadBalancer", "CanonicalHostedZoneID"]}
+                    "HostedZoneId": {
+                        "Fn::GetAtt": [
+                            "ApplicationLoadBalancer",
+                            "CanonicalHostedZoneID"
+                        ]
+                    }
                 }
             }
         },
@@ -1727,11 +1871,17 @@
                 "Parameters": {
                     "OriginDnsName": {
                         "Fn::If": [
-                            "DrupalSiteDomainRoute53Condition", 
-                            {"Ref": "DrupalSiteDomain"},
-                            {"Fn::GetAtt": ["ApplicationLoadBalancer", "DNSName"]}
+                            "DrupalSiteDomainRoute53Condition",
+                            {
+                                "Ref": "DrupalSiteDomain"
+                            },
+                            {
+                                "Fn::GetAtt": [
+                                    "ApplicationLoadBalancer",
+                                    "DNSName"
+                                ]
+                            }
                         ]
-                        
                     },
                     "OriginAccessProtocol": {
                         "Fn::If": [
@@ -1740,7 +1890,16 @@
                             "http-only"
                         ]
                     },
-                    "CloudFrontAlias": {"Fn::Join":[",",[{"Ref": "CloudFrontAlias"}]]},
+                    "CloudFrontAlias": {
+                        "Fn::Join": [
+                            ",",
+                            [
+                                {
+                                    "Ref": "CloudFrontAlias"
+                                }
+                            ]
+                        ]
+                    },
                     "CustomSSLCertificateId": {
                         "Fn::If": [
                             "UseSSL",
@@ -1756,15 +1915,24 @@
                 }
             }
         },
-        "CloudFrontAliasRoute53Record":{
+        "CloudFrontAliasRoute53Record": {
             "Type": "AWS::Route53::RecordSet",
             "Condition": "CloudFrontAliasRoute53Condition",
-            "Properties":{
-                "Name": {"Ref": "CloudFrontAlias"},
+            "Properties": {
+                "Name": {
+                    "Ref": "CloudFrontAlias"
+                },
                 "Type": "A",
-                "HostedZoneId": {"Ref": "Route53HostedZoneId"},
-                "AliasTarget":{
-                    "DNSName": {"Fn::GetAtt": ["CloudFrontStack", "Outputs.CdnUrl"]},
+                "HostedZoneId": {
+                    "Ref": "Route53HostedZoneId"
+                },
+                "AliasTarget": {
+                    "DNSName": {
+                        "Fn::GetAtt": [
+                            "CloudFrontStack",
+                            "Outputs.CdnUrl"
+                        ]
+                    },
                     "HostedZoneId": "Z2FDTNDATAQYW2"
                 }
             }
