@@ -36,8 +36,8 @@
                         "DBAutoMinorVersionUpgrade",
                         "DBBackupRetentionPeriod",
                         "DBInstanceClass",
-                        "DBMasterUserPassword",
                         "DBMasterUsername",
+                        "DBMasterUserPassword",
                         "DBMultiAZ"
                     ]
                 },
@@ -112,7 +112,7 @@
                     "default": "Enable Auto Minor Version Upgrade"
                 },
                 "DBBackupRetentionPeriod": {
-                    "default": "Backup Rentention Period"
+                    "default": "Backup Retention Period"
                 },
                 "DBInstanceClass": {
                     "default": "Database Instance Size"
@@ -160,16 +160,16 @@
                     "default": "PHP Version"
                 },
                 "PrivateSubnet1ID": {
-                    "default": "Private Subnet-1 ID"
+                    "default": "Private Subnet 1 ID"
                 },
                 "PrivateSubnet2ID": {
-                    "default": "Private Subnet-2 ID"
+                    "default": "Private Subnet 2 ID"
                 },
                 "PublicSubnet1ID": {
-                    "default": "Public Subnet-1 ID"
+                    "default": "Public Subnet 1 ID"
                 },
                 "PublicSubnet2ID": {
-                    "default": "Public Subnet-2 ID"
+                    "default": "Public Subnet 2 ID"
                 },
                 "QSS3BucketName": {
                     "default": "Quick Start S3 Bucket Name"
@@ -178,7 +178,7 @@
                     "default": "Quick Start S3 Key Prefix"
                 },
                 "SSLCertificateId": {
-                    "default": "SSL certificate ARN"
+                    "default": "SSL Certificate ARN"
                 },
                 "VPCCIDR": {
                     "default": "VPC CIDR"
@@ -193,10 +193,10 @@
                     "default": "Webserver Instance Size"
                 },
                 "WebServerMaxSize": {
-                    "default": "Max number of Instances"
+                    "default": "Max Number of Instances"
                 },
                 "WebServerMinSize": {
-                    "default": "Min number of Instances"
+                    "default": "Min Number of Instances"
                 },
                 "CloudFrontEnable":{
                     "default": "Enable CloudFront"

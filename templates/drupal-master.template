@@ -46,8 +46,8 @@
                         "DBAutoMinorVersionUpgrade",
                         "DBBackupRetentionPeriod",
                         "DBInstanceClass",
-                        "DBMasterUserPassword",
                         "DBMasterUsername",
+                        "DBMasterUserPassword",
                         "DBMultiAZ"
                     ]
                 },
@@ -127,7 +127,7 @@
                     "default": "Enable Auto Minor Version Upgrade"
                 },
                 "DBBackupRetentionPeriod": {
-                    "default": "Backup Rentention Period"
+                    "default": "Backup Retention Period"
                 },
                 "DBInstanceClass": {
                     "default": "Database Instance Size"
@@ -196,7 +196,7 @@
                     "default": "Allowed Bastion External Access CIDR"
                 },
                 "SSLCertificateId": {
-                    "default": "SSL certificate ARN"
+                    "default": "SSL Certificate ARN"
                 },
                 "VPCCIDR": {
                     "default": "VPC CIDR"
@@ -208,10 +208,10 @@
                     "default": "Webserver Instance Size"
                 },
                 "WebServerMaxSize": {
-                    "default": "Max number of Instances"
+                    "default": "Max Number of Instances"
                 },
                 "WebServerMinSize": {
-                    "default": "Min number of Instances"
+                    "default": "Min Number of Instances"
                 },
                 "CloudFrontEnable":{
                     "default": "Enable CloudFront"
