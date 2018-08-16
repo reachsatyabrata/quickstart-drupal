@@ -7,7 +7,7 @@ This Quick Start deploys a highly available Drupal architecture on the Amazon We
 
 Deploying Drupal on AWS makes it easy to use AWS services to further enhance the performance and extend functionality of your content management framework. This Quick Start lets you choose between [Drupal-7](https://www.drupal.org/drupal-7.0) and [Drupal-8](https://www.drupal.org/8).
 
-The deployment uses Amazon Elastic Compute Cloud (Amazon EC2), Amazon Virtual Private Cloud (Amazon VPC), Amazon Relational Database Service (Amazon RDS), and Amazon Elastic File System (Amazon EFS).
+The deployment uses Amazon Elastic Compute Cloud (Amazon EC2), Amazon Virtual Private Cloud (Amazon VPC), Amazon Relational Database Service (Amazon RDS), Amazon Elastic File System (Amazon EFS), Amazon ElastiCache, Amazon CloudFront, and Amazon Route 53.
 
 The AWS CloudFormation templates included with the Quick Start automate the following:
 
@@ -16,7 +16,7 @@ The AWS CloudFormation templates included with the Quick Start automate the foll
 
 You can also use the AWS CloudFormation templates as a starting point for your own implementation.
 
-![Quick Start architecture for Drupal on AWS](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/drupal-architecture-on-the-aws-cloud.png)
+![Quick Start architecture for Drupal on AWS](https://d1.awsstatic.com/partner-network/QuickStart/datasheets/drupal-architecture-on-the-aws-cloud.6972e4bb7ce3d0019bdae4bc4239d6586e59b3a9.png)
 
 For detailed information about the architecture and step-by-step instructions, see the [deployment guide](https://fwd.aws/yWE7G).
 
