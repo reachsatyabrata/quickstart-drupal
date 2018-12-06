@@ -112,10 +112,10 @@
             ],
             "ParameterLabels": {
                 "AutoScalingNotificationEmail": {
-                    "default": "Autoscaling Notification Email"
+                    "default": "reachsatyabrata@gmail.com"
                 },
                 "AvailabilityZones": {
-                    "default": "Availability Zones"
+                    "default": "us-west-2a"
                 },
                 "BastionAMIOS": {
                     "default": "Bastion AMI Operating System"
@@ -133,7 +133,7 @@
                     "default": "Database Instance Size"
                 },
                 "DBMasterUserPassword": {
-                    "default": "Database Admin Password"
+                    "default": "Master@8335"
                 },
                 "DBMasterUsername": {
                     "default": "Database Admin Username"
@@ -145,16 +145,16 @@
                     "default": "Drupal Database Name"
                 },
                 "DrupalDbPassword": {
-                    "default": "Drupal Database Password"
+                    "default": "Master@8334"
                 },
                 "DrupalDbUsername": {
                     "default": "Drupal Database Username"
                 },
                 "DrupalSiteAdminEmail": {
-                    "default": "Drupal Site Admin Email"
+                    "default": "reachsatyabrata@gmail.com"
                 },
                 "DrupalSiteAdminPassword": {
-                    "default": "Drupal Site Admin Password"
+                    "default": "Master@8336"
                 },
                 "DrupalSiteAdminUsername": {
                     "default": "Drupal Site Admin Username"
@@ -169,7 +169,7 @@
                     "default": "Drupal Version"
                 },
                 "KeyPair": {
-                    "default": "Bastion Host KeyPair Name"
+                    "default": "oregon"
                 },
                 "PhpVersion": {
                     "default": "PHP Version"
@@ -193,7 +193,7 @@
                     "default": "Quick Start S3 Key Prefix"
                 },
                 "RemoteAccessCIDR": {
-                    "default": "Allowed Bastion External Access CIDR"
+                    "default": "10.1.0.0/16"
                 },
                 "SSLCertificateId": {
                     "default": "SSL Certificate ARN"
